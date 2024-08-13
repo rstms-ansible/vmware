@@ -43,6 +43,7 @@ destroy:
 
 clean:
 	rm -f *.tar.gz || true
+	rm -rf .pytest_cache
 
 #
 # version management
