@@ -29,7 +29,7 @@ destroy:
 clean: destroy
 	rm -f *.tar.gz || true
 
-bumper = $(if $(shell git status --porcelain),$(error Working tree is dirty),bumpversion $(1) && git log --decorate=short | head -1)
+bumper = $(if $(shell git status --porcelain),$(error Working tree is dirty),@bumpversion $(1) && git log --decorate=short | head -1)
 
 bump:
 	$(call bumper,patch)
