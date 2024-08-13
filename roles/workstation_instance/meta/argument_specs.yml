@@ -3,8 +3,8 @@ argument_specs:
     short_description: vmware workstation instance management role
     description:
       - Create or Destroy a VM instance based on the valueo of the `vm_state` variable.
-        Note that when creating, one must set `gather_facts: no` since the instance will
-        not exist at the start of the play.
+        Note that when creating, one must set `gather_facts` to false since the instance
+        will not exist at the start of the play.
       - When an instance is created, it boots from a netboot ISO downloaded from
         the netboot server which references an IPXE script for the specified OS.
       - Additionally, an autoconfig response file is generated along with an initial
