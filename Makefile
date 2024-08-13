@@ -47,7 +47,7 @@ clean: destroy
 #
 # version management
 #
-bumper = $(if $(shell git status --porcelain),$(error Working tree is dirty),@bumpversion $(1) && git log --decorate=short | head -1)
+bumper = $(if $(shell git status --porcelain),$(error Working tree is dirty),@bumpversion $(1) && git push && git log --decorate=short | head -1)
 bump:
 	$(call bumper,patch)
 bump-minor: 
