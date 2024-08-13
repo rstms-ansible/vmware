@@ -11,7 +11,7 @@ vars := \
   vm_os=OpenBSD\
   vm_version=7.5\
   vm_secrets_file=example_secrets.yml\
-  vm_filesystem_dir=$(PWD)/example_nstance_filesystem
+  vm_filesystem_dir=$(PWD)/example_instance_filesystem
 
 rebuild: destroy create
 
@@ -29,11 +29,16 @@ destroy:
 clean: destroy
 	rm -f *.tar.gz || true
 
-bumper = $(if $(shell git status --porcelain),$(error Working tree is dirty),bumpversion)
-bump_mode := patch
+bumper = $(if $(shell git status --porcelain),$(error Working tree is dirty),bumpversion $(1) && git log --decorate=short | head -1)
 
 bump:
-	$(bumper) $(bump_mode)
+	$(call bumper,patch)
+
+bump-minor: 
+	$(call bumper,minor)
+
+bump-major: 
+	$(call bumper,major)
 
 build: bump
 	ansible-galaxy build
