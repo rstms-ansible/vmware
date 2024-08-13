@@ -14,7 +14,7 @@
     owner: root
     group: wheel
     mode: preserve
-  when: vm_filesystem_dir
+  when: vm_filesystem_dir | length > 0
 
 - name: Check for install.site in install_filesystem
   stat: 

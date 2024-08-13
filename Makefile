@@ -32,13 +32,13 @@ test: destroy create
 ansible = ansible-playbook -vv -i $(host), --extra-vars @$(vault)  $(foreach var,$(vars),--extra-vars '$(var)' )
 
 create:
-	$(ansible) -e "state=present" $(playbook)
+	$(ansible) -e "vm_state=present" $(playbook)
 
 edit-vault:
 	ansible-vault edit $(vault)
 
 destroy:
-	$(ansible) -e "state=absent" $(playbook)
+	$(ansible) -e "vm_state=absent" $(playbook)
 
 
 clean:
