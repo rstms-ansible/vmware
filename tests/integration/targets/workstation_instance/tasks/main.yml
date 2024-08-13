@@ -1,7 +1,7 @@
 ---
 - name: Test the instance role
   ansible.builtin.include_role:
-    name: rstms_ansible.vmware.instance
+    name: rstms_ansible.vmware.workstation_instance
   vars:
     vm_hostname: testbox
     vm_os: OpenBSD
