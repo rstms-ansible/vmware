@@ -41,7 +41,6 @@ issues: http://github.com/rstms-ansible/vmware/issues
 manifest:
   omit_default_directives: true
   directives:
-   - include LICENSE VERSION galaxy.yml requirements.txt
-   - recursive-include roles README* *.yml *.j2
-   - recursive-include meta README* *.yml *.j2
+   - include README.md LICENSE VERSION galaxy.yml requirements.txt
+   - recursive-include * README.md *.yml *.j2
    - exclude .gitignore changelogs example* *secret* collections
