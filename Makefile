@@ -29,13 +29,11 @@ destroy:
 clean: destroy
 	rm -f *.tar.gz || true
 
-bumper := $(if $(shell git status --porcelain),$(error Working tree is dirty),$(info Working tree clean))
-#bumper := $(if $(shell git status --porcelain),bumpversion $(1),$(error Working tree is dirty))
+bumper = $(if $(shell git status --porcelain),$(error Working tree is dirty),bumpversion)
+bump_mode := patch
 
 bump:
-	$(call bumper,patch)
-
-	#git push
+	$(bumper) $(bump_mode)
 
 build: bump
 	ansible-galaxy build
