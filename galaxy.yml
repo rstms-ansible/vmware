@@ -25,11 +25,12 @@ issues: http://github.com/rstms-ansible/vmware/issues
 # artifact. A pattern is matched from the relative path of the file or directory of the collection directory. This
 # uses 'fnmatch' to match the files or directories. Some directories and files like 'galaxy.yml', '*.pyc', '*.retry',
 # and '.git' are always filtered. Mutually exclusive with 'manifest'
-build_ignore:
-  - .gitignore
-  - changelogs/.plugin-cache.yaml
-  - "example*"
-  - "*secret*"
+#build_ignore:
+#  - .gitignore
+#  - changelogs/.plugin-cache.yaml
+#  - "example*"
+#  - "*secret*"
+#  - collections
 
 # A dict controlling use of manifest directives used in building the collection artifact. The key 'directives' is a
 # list of MANIFEST.in style
@@ -37,3 +38,10 @@ build_ignore:
 # 'omit_default_directives' is a boolean that controls whether the default directives are used. Mutually exclusive
 # with 'build_ignore'
 # manifest: null
+manifest:
+  omit_default_directives: true
+  directives:
+   - include LICENSE VERSION galaxy.yml requirements.txt
+   - recursive-include roles README* *.yml *.j2
+   - recursive-include meta README* *.yml *.j2
+   - exclude .gitignore changelogs example* *secret* collections

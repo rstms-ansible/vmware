@@ -1,0 +1,11 @@
+#!/bin/bash
+set -ueo pipefail
+rm -rf docs
+mkdir docs
+chmod 0700 docs
+antsibull-docs sphinx-init --use-current --squash-hierarchy rstms_ansible.vmware --dest-dir docs
+cd docs
+ansible-galaxy collection install rstms_ansible.vmware
+pip install -r requirements.txt
+./build.sh
+firefox build/html/index.html
