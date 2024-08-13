@@ -13,7 +13,7 @@ vm_password_length: 32
 vm_filesystem_dir: false
 
 vm_update_known_hosts: true
-vm_secrets_file: "{{ playbook_dir }}/secrets.yml"
+vm_secrets_file: ""
 
 # full disk encryption
 vm_fde_enabled: false
@@ -30,9 +30,9 @@ netboot_host: netboot.rstms.net
 netboot_iso: http://{{ netboot_host }}/rstms-netboot.iso
 netboot_dir: /var/www/netboot
 netboot_gui: false
-netboot_fullscreen: true
+netboot_fullscreen: false
 netboot_timeout: 300
-netboot_packages: ["py3-pip"]
+netboot_packages: "py3-pip"
 
 # autoinstall config
 install_host: install.rstms.net

@@ -53,6 +53,7 @@ argument_specs:
         type: "str"
         required: false
         default: "(timezone of control system)"
+        description: timezone set during instance configuration
 
       vm_cpu_count:
         type: "int"
@@ -108,19 +109,74 @@ argument_specs:
 #vm_fde_passphrase_length: 32
 #
 ## OpenBSD specific 
-#vm_os: OpenBSD
-#vm_os_version: 7.5
-#vm_os_arch: amd64
-#
-## netboot config
-#netboot_host: netboot.rstms.net
-#netboot_iso: http://{{ netboot_host }}/rstms-netboot.iso
-#netboot_dir: /var/www/netboot
-#netboot_gui: false
-#netboot_fullscreen: true
-#netboot_timeout: 300
-#netboot_packages: ["py3-pip"]
-#
-## autoinstall config
-#install_host: install.rstms.net
-#install_config_dir: /var/www/htdocs
+      vm_os:
+        type: "str"
+        required: false
+        default: "OpenBSD"
+        description: netboot/autoinstall OS name
+
+      vm_os_version:
+        type: "str"
+        required: false
+        default: "7.5"
+        description: netboot/autoinstall OS version
+
+      vm_os_arch:
+        type: "str"
+        required: false
+        default: amd64
+        description: netboot/autoinstall OS architecture
+
+      netboot_host:
+        type: "str"
+        required: false
+        default: netboot.rstms.net
+        description: netboot server hostname
+
+      netboot_iso:
+        type: "str"
+        required: false
+        default: http://netboot.rstms.net/rstms-netboot.iso
+        description: URL of netboot ISO
+
+      netboot_dir:
+        type: "str"
+        required: false
+        default:  /var/www/netboot
+        description: directory for netboot OS selection config upload
+        
+      netboot_gui:
+        type: "str"
+        required: false
+        default:  false
+        description: start VM in windowed mode during netboot
+
+      netboot_fullscreen: true
+        type: "str"
+        required: false
+        default: false 
+        description: start VM in full screen mode during netboot
+
+      netboot_timeout:
+        type: "str"
+        required: false
+        default: 300
+        description: netboot timeout value in seconds
+
+      netboot_packages:
+        default: "py3-pip"
+        type: "str"
+        required: false
+        description: space-delmited list of packages to install on first boot
+
+      install_host:
+        type: "str"
+        required: false
+        default: install.rstms.net
+        description: autoinstall hostname
+
+      install_config_dir:
+        type: "str"
+        required: false
+        default: /var/www/htdocs
+        description: autoinstall server config file upload directory
