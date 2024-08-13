@@ -1,17 +1,43 @@
-# Role: rstms_ansible.vmware.instance
+rstms_ansible.vmware instance Role
+========================
 
-A roles for managing VMWare Workstation instances
+manage VMWare Workstation instances 
 
-### Role Variables
-TODO: add variable descriptions
+Requirements
+------------
 
+  - VMWare Workstation VMREST server
+  - vmctl configured for VMREST API
+  - netboot server
+  - autoinstall server
 
-### Usage Notes
+Role Variables
+--------------
 
-#### Root password generation
-A random root password is generated for a created instance.
-If the variable `vm_secrets_file` is set, generated password will be written with `ansible-vault` as `<vm_hostname>_root`
-Decryption command:
+See `roles/instance/vars/main.yml` for the variables used by this role
+
+Dependencies
+------------
+
+  - python module rstms-vmwctl
+
+Example Playbook
+----------------
+
+```yaml
+- name: rstms.vmware example playbook
+
+  hosts: testbox.example.org
+  gather_facts: no
+  vars:
+    vm_os: OpenBSD
+
+  roles:
+    - instance
 ```
-ansible-vault decrypt secrets.yml --output - | jq -r .examplehost_root
-```
+
+License
+-------
+
+GPL-3
+

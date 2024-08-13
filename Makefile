@@ -41,7 +41,7 @@ destroy:
 	$(ansible) -e "state=absent" $(playbook)
 
 
-clean: destroy
+clean:
 	rm -f *.tar.gz || true
 
 #
