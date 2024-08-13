@@ -2,9 +2,19 @@
 # ansible collection test makefile
 #
 
+namespace = rstms_ansible
+collection = vmware
+version != cat VERSION
+roles_src != find roles -type f
+src = $(roles_src) VERSION galaxy.yml
+tarball = $(namespace)-$(collection)-$(version).tar.gz
+
+#
+# test config
+#
+
 host = testbox.rstms.net
 vault = $(HOME)/.secrets/ansible_vault.yml
-role := instance
 playbook := example_playbook.yml
 
 vars := \
@@ -13,7 +23,11 @@ vars := \
   vm_secrets_file=example_secrets.yml\
   vm_filesystem_dir=$(PWD)/example_instance_filesystem
 
-rebuild: destroy create
+# 
+# test targets
+#
+
+test: destroy create
 
 ansible = ansible-playbook -vv -i $(host), --extra-vars @$(vault)  $(foreach var,$(vars),--extra-vars '$(var)' )
 
@@ -26,19 +40,28 @@ edit-vault:
 destroy:
 	$(ansible) -e "state=absent" $(playbook)
 
+
 clean: destroy
 	rm -f *.tar.gz || true
 
+#
+# version management
+#
 bumper = $(if $(shell git status --porcelain),$(error Working tree is dirty),@bumpversion $(1) && git log --decorate=short | head -1)
-
 bump:
 	$(call bumper,patch)
-
 bump-minor: 
 	$(call bumper,minor)
-
 bump-major: 
 	$(call bumper,major)
 
-build: bump
-	ansible-galaxy build
+#
+# ansible-galaxy 
+#
+$(tarball): $(src)
+	ansible-galaxy collection build --force
+
+build: $(tarball)
+
+publish: build
+	ansible-galaxy collection publish --token $(ANSIBLE_GALAXY_TOKEN) $(tarball)

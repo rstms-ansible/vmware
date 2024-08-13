@@ -1,16 +1,6 @@
-# Collection: rstms_ansible.vmware
+# Role: rstms_ansible.vmware.instance
 
-A collection of roles for managing VMWare Workstation instances
-
-### netboot
-TODO: describe netboot
-
-### autoinstall
-TODO: describe autoinstall
-
-### roles
-TODO: list and link to roles
-
+A roles for managing VMWare Workstation instances
 
 ### Role Variables
 TODO: add variable descriptions
