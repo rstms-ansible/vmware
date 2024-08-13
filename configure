@@ -1,0 +1,11 @@
+#!/bin/sh
+if [ -z "$VIRTUAL_ENV" ]; then
+  read -rp "Python virtualenv not detected.  Continue anyway? [y/N] " REPLY
+  echo 
+  case $REPLY in 
+    yY);;
+    *) exit 1;;
+  esac
+fi
+pip install -U pip ansible
+pip install -r requirements.txt -r requirements-dev.txt 

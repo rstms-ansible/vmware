@@ -1,0 +1,6 @@
+- name: Remove current host keys from known_hosts
+  command: ssh-keygen -R {{ hostname }} -f {{ home }}/.ssh/known_hosts
+
+- name: Update known_hosts with new host keys
+  shell: ssh-keyscan {{ hostname }} >> {{ home }}/.ssh/known_hosts
+  when: state == 'present'

@@ -1,0 +1,67 @@
+
+- name: Set install_package_path
+  set_fact:
+    install_package_path: "pub/{{ vm_os }}/{{ vm_os_version }}/{{ vm_os_arch }}"
+
+- name: set install_package_dir
+  set_fact:
+    install_package_dir: "{{ install_config_dir }}/{{ install_package_path }}"
+
+- name: Set install_package_filename
+  set_fact:
+    install_package_filename: "site{{ vm_os_version | replace('.', '') }}-{{ vm_hostname }}.tgz"
+
+- name: Verify disk encryption passphrase
+  assert:
+    that:
+      - vm_fde_passphrase is defined
+      - vm_fde_password | length > vm_fde_passphrase_minimum_length
+    fail_msg: "vm_fde_passphrase must be provided as a vaulted variable"
+  when: vm_fde_enabled and (vm_fde_mode == 'p')
+
+- name: Hash user password 
+  command:
+    cmd: encrypt -ba
+    stdin: "{{ vm_password }}"
+  register: user_password_hash
+
+- name: Generate root password
+  include_tasks: generate_password.yml
+  vars:
+    label: "{{ vm_hostname }}_root"
+    length: "{{ vm_password_length }}"
+    vault_file: "{{ vm_secrets_file }}"
+
+- name: Hash root password
+  command: 
+    cmd: encrypt -ba
+    stdin: "{{ generated_password }}"
+  register: root_password_hash
+
+- name: Generate FDE password
+  include_tasks: generate_password.yml
+  vars:
+    label: "{{ vm_hostname }}_disk"
+    length: "{{ vm_fde_password_length }}"
+    vault_file: "{{ vm_secrets_file }}"
+  when: vm_fde_enabled
+
+- name: Upload autoinstall config file
+  template:
+    src: install.conf.j2
+    dest: "{{ install_config_dir }}/{{ instance_info.mac }}-install.conf"
+    owner: root
+    group: www
+    mode: '0644'
+    force: true
+
+- name: Rewrite config index
+  shell:
+    cmd: "ls -lT >index.txt"
+    chdir: "{{ install_config_dir }}"
+
+- name: Create and upload site_package tarball
+  include_tasks: "upload_site_package.yml"
+
+- name: Reload httpd
+  command: rcctl reload httpd

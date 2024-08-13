@@ -1,0 +1,8 @@
+---
+- name: rstms.vmware example playbook
+
+  hosts: testbox.rstms.net
+  gather_facts: no
+
+  roles:
+    - instance

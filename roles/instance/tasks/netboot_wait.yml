@@ -1,0 +1,37 @@
+- name: create sentinel file
+  command: mktemp
+  register: sentinel
+
+- name: start installation_complete watcher
+  shell: |
+    tail -n 0 -f /var/www/logs/error.log \
+    | awk -v sentinel={{ sentinel.stdout | trim }} '
+      /installation_complete_{{ instance_info.mac }}/{ 
+          system("rm " sentinel);
+      }
+      {
+          if (system("stat " sentinel)) {
+              system("kill 0");
+          }
+      }
+    '
+  async: "{{ netboot_timeout }}"
+  poll: 0
+  register: log_watcher
+  
+- name: wait for installation complete
+  wait_for: 
+    path: "{{ sentinel.stdout | trim }}"
+    state: absent
+    timeout: "{{ netboot_timeout }}"
+    msg: "Timed out after {{ netboot_timeout }} seconds waiting for installation_complete"
+  register: installation_complete
+  ignore_errors: true
+
+- name: delete sentinel file
+  file:
+    path: "{{ sentinel.stdout | trim }}"
+    state: absent
+
+- name: trigger installation watcher shutdown 
+  shell: "curl -s http://{{ netboot_host }}/installation_complete >/dev/null || true"

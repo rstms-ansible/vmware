@@ -1,0 +1,22 @@
+
+- name: init instance_info
+  set_fact:
+      instance_info: "{{ {} | combine({'name': vm_hostname, 'created': false, 'destroyed': false}) }}"
+
+- name: list instances
+  command: vmctl ls 
+  register: result
+  delegate_to: localhost
+  ignore_errors: true
+
+- name: set instance present value
+  set_fact:
+    instance_info: "{{ instance_info | combine({'exists': vm_hostname in (result.stdout | from_json)}) }}" 
+
+- name: destroy instance
+  include_tasks: destroy.yml
+  when: (state == "absent") and instance_info.exists 
+
+- name: create instance
+  include_tasks: create.yml
+  when: (state == "present") and (not instance_info.exists) 

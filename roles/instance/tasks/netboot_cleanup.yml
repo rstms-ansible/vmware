@@ -1,0 +1,5 @@
+
+- name: delete customized netboot ipxe
+  file:
+    path: "{{ netboot_ipxe }}"
+    state: absent
