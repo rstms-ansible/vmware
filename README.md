@@ -1,18 +1,22 @@
 # Ansible Collection - rstms.vmware
 
-Role for management of VMWare Workstation VM instances
+A role for managing VMWare Workstation VM instances using netboot and autoconfig
 
-## Dependencies
-TODO: describe dependencies
+### netboot
+TODO: describe netboot
 
-## Role Variables
+### autoinstall
+TODO: describe autoinstall
+
+### Role Variables
 TODO: add variable descriptions
 
-## Root password generation
-A random root password is generated when creating the new instance.
-If the variable `vm_secrets_file` is set to a string, it will be used as an ansible_vault filename.  
-The generated root password will be written as `<vm_hostname>_root: XXXXXXXX`
-The root password may be decrypted with this command:
+### Usage Notes
+
+#### Root password generation
+A random root password is generated for a created instance.
+If the variable `vm_secrets_file` is set, generated password will be written with `ansible-vault` as `<vm_hostname>_root`
+Decryption command:
 ```
-ansible-vault decrypt vm_secrets.yml --output - | jq -r .vmname_root
+ansible-vault decrypt secrets.yml --output - | jq -r .examplehost_root
 ```
