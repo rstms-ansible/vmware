@@ -35,7 +35,7 @@
 - name: Hash root password
   command: 
     cmd: encrypt -ba
-    stdin: "{{ generated_password }}"
+    stdin: "{{ generated_password.stdout | trim }}"
   register: root_password_hash
 
 - name: Generate FDE password
