@@ -8,7 +8,7 @@ vm_cpu_count: 1
 vm_disk_mb: 8192
 vm_ram_mb: 1024
 vm_headless: true
-vm_password_length: 32
+vm_password_length: 8
 vm_filesystem_dir: ""
 
 vm_update_known_hosts: true
@@ -30,9 +30,20 @@ netboot_iso: http://{{ netboot_host }}/rstms-netboot.iso
 netboot_dir: /var/www/netboot
 netboot_gui: false
 netboot_fullscreen: false
-netboot_timeout: 300
-netboot_packages: "py3-pip"
+netboot_timeout: 600
 
 # autoinstall config
 install_host: install.rstms.net
 install_config_dir: /var/www/htdocs
+install_packages:
+  debian:
+    - doas
+    - rsyslog
+  openbsd:
+    - py3-pip
+  alpine:
+    - doas
+    - bash
+    - vim
+    - man
+    - man-pages

@@ -1,0 +1,65 @@
+d-i partman/early_command string hostname {{ vm_hostname }}
+d-i debian-installer/locale string en_US
+d-i keyboard-configuration/xkb-keymap select us
+d-i netcfg/choose_interface select auto
+d-i netcfg/wireless_wep string
+d-i mirror/protocol string http
+d-i mirror/country string manual
+d-i mirror/http/hostname string http.us.debian.org
+d-i mirror/http/directory string /debian
+d-i mirror/http/proxy string http://debcache.rstms.net:3142
+d-i passwd/root-password-crypted password {{ root_password_hash.stdout | trim }}
+d-i passwd/user-fullname string {{ vm_username }}
+d-i passwd/username string {{ vm_username }}
+d-i passwd/user-password-crypted password {{ user_password_hash.stdout | trim }}
+d-i clock-setup/utc boolean true
+d-i time/zone string {{ vm_timezone }}
+d-i clock-setup/ntp boolean true
+d-i partman-auto/method string lvm
+d-i partman-auto-lvm/guided_size string max
+d-i partman-lvm/device_remove_lvm boolean true
+d-i partman-md/device_remove_md boolean true
+d-i partman-lvm/confirm boolean true
+d-i partman-lvm/confirm_nooverwrite boolean true
+d-i partman-auto/choose_recipe select atomic
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+d-i partman-md/confirm boolean true
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+d-i apt-setup/cdrom/set-first boolean false
+d-i pkgsel/run_tasksel boolean false
+d-i pkgsel/include string {{ install_packages.debian | join(' ') }}
+popularity-contest popularity-contest/participate boolean false
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/with_other_os boolean true
+d-i grub-installer/bootdev  string default
+d-i finish-install/reboot_in_progress note
+d-i debian-installer/exit/poweroff boolean false
+d-i preseed/late_command string \
+  echo {{ vm_hostname }} >/target/etc/hostname && \
+  echo '@reboot root /bin/sh /root/firstboot' >>/target/etc/crontab && \
+  echo >/target/root/firstboot "#!/bin/sh" && \
+  echo >>/target/root/firstboot "/usr/bin/echo 'permit keepenv persist :sudo' >/etc/doas.conf" && \
+  echo >>/target/root/firstboot "/usr/sbin/adduser {{ vm_username }} sudo" && \
+  echo >>/target/root/firstboot "mkdir -p /home/{{ vm_username }}/.ssh" && \
+  echo >>/target/root/firstboot "/usr/bin/echo '{{ vm_ssh_public_key }}' >/home/{{ vm_username }}/.ssh/authorized_keys" && \
+  echo >>/target/root/firstboot "/usr/bin/chown -R {{ vm_username }}:{{ vm_username }} /home/{{ vm_username }}/.ssh" && \
+  echo >>/target/root/firstboot "/usr/bin/chmod 0700 /home/{{ vm_username }}/.ssh" && \
+  echo >>/target/root/firstboot "/usr/bin/chmod 0600 /home/{{ vm_username }}/.ssh/authorized_keys " && \
+  echo >>/target/root/firstboot "/usr/bin/sed -e 's/^@reboot.*$//' -i /etc/crontab" && \
+  echo >>/target/root/firstboot "rm /root/firstboot" && \
+  chmod 0700 /target/root/firstboot && \
+  ls -al /target/root && sleep 30 && \
+  cat /target/root/firstboot && sleep 30 && \
+  wget http://{{ install_host }}/{{ install_package_path }}/{{ install_package_filename }} -O /target/{{ install_package_filename }} && \
+  tar zxf /target/{{ install_package_filename }} -C /target && \
+  ls -al /target/root && sleep 30 && \
+  echo >>/target/etc/default/grub 'GRUB_TERMINAL="serial console"' && \
+  echo >>/target/etc/default/grub 'GRUB_SERIAL_COMMAND="serial --speed=19200 --unit=0 --word=8 --parity=no --stop=1"' && \
+  sed -e 's/^\(GRUB_CMDLINE_LINUX_DEFAULT=\).*/\1"console=tty0 console=ttyS0,19200n8"/' -i /target/etc/default/grub && \
+  in-target update-grub

@@ -17,11 +17,19 @@ host = testbox.rstms.net
 vault = $(HOME)/.secrets/ansible_vault.yml
 playbook := example_playbook.yml
 
+#vars := \
+#  vm_os=OpenBSD\
+#  vm_version=7.5\
+#  vm_secrets_file=example_secrets.yml\
+#  vm_filesystem_dir=$(PWD)/example_instance_filesystem
+
 vars := \
-  vm_os=OpenBSD\
-  vm_version=7.5\
+  vm_os=debian\
+  vm_version=bookworm\
   vm_secrets_file=example_secrets.yml\
-  vm_filesystem_dir=$(PWD)/example_instance_filesystem
+  vm_filesystem_dir=$(PWD)/example_instance_filesystem\
+  netboot_fullscreen=true\
+  netboot_packages='doas man-db manpages net-tools openssh-server'
 
 # 
 # test targets

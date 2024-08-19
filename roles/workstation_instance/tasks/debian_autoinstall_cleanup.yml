@@ -1,0 +1,9 @@
+
+- name: delete autoconfig files
+  file:
+    path: "{{ item }}"
+    state: absent
+  become: true
+  loop:
+    - "{{ install_config_dir }}/{{ instance_info.mac }}-preseed.conf"
+    - "{{ install_package_dir }}/{{ install_package_filename }}"
