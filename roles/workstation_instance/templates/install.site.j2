@@ -1,6 +1,6 @@
 cat <<-EOF >>/etc/rc.firsttime
 syspatch
-echo "Installing firstboot packages: {{ netboot_packages }}"
+echo "Installing firstboot packages: {{ install_packages.openbsd | join(' ') }}"
 pkg_add {{ install_packages.openbsd | join(' ') }}
 echo "Updating installed packages"
 pkg_add -u

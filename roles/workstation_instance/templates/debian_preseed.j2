@@ -42,24 +42,13 @@ d-i finish-install/reboot_in_progress note
 d-i debian-installer/exit/poweroff boolean false
 d-i preseed/late_command string \
   echo {{ vm_hostname }} >/target/etc/hostname && \
-  echo '@reboot root /bin/sh /root/firstboot' >>/target/etc/crontab && \
-  echo >/target/root/firstboot "#!/bin/sh" && \
-  echo >>/target/root/firstboot "/usr/bin/echo 'permit keepenv persist :sudo' >/etc/doas.conf" && \
-  echo >>/target/root/firstboot "/usr/sbin/adduser {{ vm_username }} sudo" && \
-  echo >>/target/root/firstboot "mkdir -p /home/{{ vm_username }}/.ssh" && \
-  echo >>/target/root/firstboot "/usr/bin/echo '{{ vm_ssh_public_key }}' >/home/{{ vm_username }}/.ssh/authorized_keys" && \
-  echo >>/target/root/firstboot "/usr/bin/chown -R {{ vm_username }}:{{ vm_username }} /home/{{ vm_username }}/.ssh" && \
-  echo >>/target/root/firstboot "/usr/bin/chmod 0700 /home/{{ vm_username }}/.ssh" && \
-  echo >>/target/root/firstboot "/usr/bin/chmod 0600 /home/{{ vm_username }}/.ssh/authorized_keys " && \
-  echo >>/target/root/firstboot "/usr/bin/sed -e 's/^@reboot.*$//' -i /etc/crontab" && \
-  echo >>/target/root/firstboot "rm /root/firstboot" && \
-  chmod 0700 /target/root/firstboot && \
-  ls -al /target/root && sleep 30 && \
-  cat /target/root/firstboot && sleep 30 && \
-  wget http://{{ install_host }}/{{ install_package_path }}/{{ install_package_filename }} -O /target/{{ install_package_filename }} && \
-  tar zxf /target/{{ install_package_filename }} -C /target && \
-  ls -al /target/root && sleep 30 && \
+  echo '@reboot root /bin/sh /root/debian_firstboot' >>/target/etc/crontab && \
+  wget http://{{ install_host }}/{{ install_package_path }}/{{ install_package_filename }} -O /target/root/install_package.tgz && \
+  tar zxvf /target/root/install_package.tgz -C /target && \
+  chmod 0755 /target && \
+  chmod 0700 /target/root/debian_firstboot && \
   echo >>/target/etc/default/grub 'GRUB_TERMINAL="serial console"' && \
   echo >>/target/etc/default/grub 'GRUB_SERIAL_COMMAND="serial --speed=19200 --unit=0 --word=8 --parity=no --stop=1"' && \
   sed -e 's/^\(GRUB_CMDLINE_LINUX_DEFAULT=\).*/\1"console=tty0 console=ttyS0,19200n8"/' -i /target/etc/default/grub && \
-  in-target update-grub
+  in-target update-grub 
+

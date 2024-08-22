@@ -1,0 +1,26 @@
+
+- name: Check for install.site in install_filesystem
+  stat: 
+    path: "{{ package_build_dir }}/install.site"
+  register: uploaded_install_site
+
+- name: Read uploaded install.site content
+  slurp:
+    path: "{{ package_build_dir }}/install.site"
+  when: uploaded_install_site.stat.exists
+  register: install_site_commands
+
+- name: Write install.site script
+  template:
+    src: install.site.j2
+    dest: "{{ package_build_dir }}/install.site"
+    mode: "0700"
+    owner: root
+    group: wheel
+
+- name: Append uploaded install.site commands
+  lineinfile:
+    path: "{{ package_build_dir }}/install.site"
+    line: "{{ install_site_commands.content | b64decode }}"
+    state: present
+  when: uploaded_install_site.stat.exists
