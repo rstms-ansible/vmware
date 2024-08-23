@@ -5,7 +5,7 @@
 
 - name: set install_package_dir
   set_fact:
-    install_package_dir: "{{ install_config_dir }}/{{ install_package_path }}"
+    install_package_dir: "{{ netboot_dir }}/{{ install_package_path }}"
 
 - name: Set install_package_filename
   set_fact:
@@ -49,16 +49,16 @@
 - name: Upload autoinstall config file
   template:
     src: install.conf.j2
-    dest: "{{ install_config_dir }}/{{ instance_info.mac }}-install.conf"
+    dest: "{{ netboot_dir }}/{{ instance_info.mac }}-install.conf"
     owner: root
     group: www
     mode: '0644'
     force: true
 
-- name: Rewrite config index
-  shell:
-    cmd: "ls -lT >index.txt"
-    chdir: "{{ install_config_dir }}"
+#- name: Rewrite config index
+#  shell:
+#    cmd: "ls -lT >index.txt"
+#    chdir: "{{ netboot_dir }}"
 
 - name: Create and upload site_package tarball
   include_tasks: "upload_site_package.yml"

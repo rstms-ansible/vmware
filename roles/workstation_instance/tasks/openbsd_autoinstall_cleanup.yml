@@ -5,5 +5,5 @@
     state: absent
   become: true
   loop:
-    - "{{ install_config_dir }}/{{ instance_info.mac }}-install.conf"
+    - "{{ netboot_dir }}/{{ instance_info.mac }}-install.conf"
     - "{{ install_package_dir }}/{{ install_package_filename }}"

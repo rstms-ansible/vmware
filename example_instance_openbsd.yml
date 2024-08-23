@@ -1,0 +1,8 @@
+vm_os: OpenBSD
+vm_version: 7.5
+vm_secrets_file: example_secrets.yml
+vm_filesystem_dir: example_filesystems/openbsd
+vm_packages:
+  - figlet
+  - bash
+netboot_fullscreen: true

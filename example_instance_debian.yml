@@ -1,0 +1,10 @@
+vm_os: debian
+vm_version: bookworm
+vm_secrets_file: example_secrets.yml
+vm_filesystem_dir: example_filesystems/debian
+vm_packages:
+  - doas
+  - man-db
+  - manpages
+  - net-tools
+netboot_fullscreen: true

@@ -1,1 +1,0 @@
-  curl http://{{ install_host }}/{{ install_package_path }}/{{ install_package_filename }} -o /target/{{ install_package_filename }}&& \

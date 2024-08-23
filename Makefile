@@ -15,21 +15,8 @@ tarball = $(namespace)-$(collection)-$(version).tar.gz
 
 host = testbox.rstms.net
 vault = $(HOME)/.secrets/ansible_vault.yml
+instance_config = example_instance_debian.yml
 playbook := example_playbook.yml
-
-vars := \
-  vm_os=OpenBSD\
-  vm_version=7.5\
-  vm_secrets_file=example_secrets.yml\
-  vm_filesystem_dir=$(PWD)/example_filesystems/openbsd
-
-#vars := \
-#  vm_os=debian\
-#  vm_version=bookworm\
-#  vm_secrets_file=example_secrets.yml\
-#  vm_filesystem_dir=$(PWD)/example_filesystems/debian\
-#  netboot_fullscreen=true\
-#  firstboot_packages='doas man-db manpages net-tools'
 
 # 
 # test targets
@@ -37,7 +24,7 @@ vars := \
 
 test: destroy create
 
-ansible = ansible-playbook -vv -i $(host), --extra-vars @$(vault)  $(foreach var,$(vars),--extra-vars '$(var)' )
+ansible = ansible-playbook -vv -i $(host), --extra-vars @$(vault)  --extra-vars @$(instance_config)
 
 create:
 	$(ansible) -e "vm_state=present" $(playbook)
@@ -52,6 +39,7 @@ destroy:
 clean:
 	rm -f *.tar.gz || true
 	rm -rf .pytest_cache
+	./mkdocs clean
 
 #
 # ansible-galaxy 
@@ -61,5 +49,9 @@ $(tarball): $(src)
 
 build: $(tarball)
 
-publish: build
+.PHONY: docs
+docs: $(tarball)
+	./mkdocs
+
+publish: docs
 	ansible-galaxy collection publish --token $(ANSIBLE_GALAXY_TOKEN) $(tarball)

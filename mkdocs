@@ -1,11 +1,15 @@
 #!/bin/bash
 set -ueo pipefail
+namespace=rstms_ansible
+collection=vmware
+version=$(cat VERSION)
 rm -rf docs
 mkdir docs
 chmod 0700 docs
-antsibull-docs sphinx-init --use-current --squash-hierarchy rstms_ansible.vmware --dest-dir docs
+(( $#>0 )) && [[ $1 = clean ]] && exit 0
+antsibull-docs sphinx-init --use-current --squash-hierarchy "${namespace}.${collection}" --dest-dir docs
 cd docs
-ansible-galaxy collection install rstms_ansible.vmware
 pip install -r requirements.txt
+ansible-galaxy collection install --force --upgrade "../${namespace}-${collection}-${version}.tar.gz"
 ./build.sh
 firefox build/html/index.html

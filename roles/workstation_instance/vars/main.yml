@@ -10,6 +10,7 @@ vm_ram_mb: 1024
 vm_headless: true
 vm_password_length: 8
 vm_filesystem_dir: ""
+vm_packages: []
 
 vm_update_known_hosts: true
 vm_secrets_file: ""
@@ -32,10 +33,8 @@ netboot_gui: false
 netboot_fullscreen: false
 netboot_timeout: 600
 
-# autoinstall config
-install_host: install.rstms.net
-install_config_dir: /var/www/htdocs
-install_packages:
+# packages added by default
+netboot_packages:
   debian:
     - doas
     - rsyslog
@@ -43,7 +42,3 @@ install_packages:
     - py3-pip
   alpine:
     - doas
-    - bash
-    - vim
-    - man
-    - man-pages

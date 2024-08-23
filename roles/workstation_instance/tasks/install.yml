@@ -11,7 +11,7 @@
   include_tasks:
     file: "{{ vm_os | lower }}_autoinstall_config.yml"
     apply: 
-      delegate_to: "{{ install_host }}"
+      delegate_to: "{{ netboot_host }}"
       become: true
       become_method: doas
 
@@ -33,7 +33,7 @@
   include_tasks:
     file: "{{ vm_os | lower }}_autoinstall_cleanup.yml"
     apply:
-      delegate_to: "{{ install_host }}"
+      delegate_to: "{{ netboot_host }}"
       become: true
       become_method: doas
 
