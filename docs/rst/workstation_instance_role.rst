@@ -21,7 +21,7 @@ rstms_ansible.vmware.workstation_instance role
 .. Collection note
 
 .. note::
-    This role is part of the `rstms_ansible.vmware collection <https://galaxy.ansible.com/ui/repo/published/rstms_ansible/vmware/>`_ (version 0.1.0).
+    This role is part of the `rstms_ansible.vmware collection <https://galaxy.ansible.com/ui/repo/published/rstms_ansible/vmware/>`_ (version 0.1.1).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
@@ -52,13 +52,13 @@ Synopsis
 .. Description
 
 - Create or Destroy a VM instance based on the value of the \`vm\_state\` variable.
-- In a play using the role to create an instance, set \`gather\_facts\` to \`false\` since the instance will not yet exist.
+- In a playbook using the role to create an instance, set \`gather\_facts\` to \`false\` since the instance will not yet exist.
 - Uses a netboot server to facilitate boot, OS install, and initial configuration.
-- A response file for the installer is generated uploaded to the netboot server.
+- A response file for the OS installer is generated and uploaded to the netboot server.
 - An install package tarball is generated to be extracted at the root directory after installation, but before the initial boot.  See \`vm\_filesystem\_dir\`
-- A \`firstboot\` script is generated, which is executed during the initial boot.
+- A \`firstboot\` script is generated during instal and executed during the initial boot.
 - The role waits for an installation-complete message from the firstboot script, then deletes the generated files from the netboot server.
-- The local .ssh/known-hosts is updated by default so that the created VM will not conflict with existing host keys.
+- Optionally, the local .ssh/known-hosts may be updated so that the created VM will not conflict with existing host keys.
 
 .. Requirements
 
