@@ -9,7 +9,7 @@
 Rstms_Ansible.Vmware
 ====================
 
-Collection version 0.1.2
+Collection version 0.1.3
 
 .. contents::
    :local:
