@@ -1,4 +1,8 @@
 
+- name: report install os
+  debug: 
+    msg: "os={{ vm_os }} version={{ os_version }}"
+
 - name: Configure netboot
   include_tasks:
     file: netboot_config.yml
