@@ -3,6 +3,8 @@
   command: vmctl create --cpu {{ vm_cpu_count }} --ram {{ vm_ram_mb }} --disk {{ vm_disk_mb }} {{ vm_hostname }}
   register: result
   delegate_to: localhost
+  vars:
+    ansible_connection: local
 
 - name: init instance_info
   set_fact:
@@ -14,12 +16,9 @@
     os_name: "{{ vm_os | lower }}"
 
 - name: update known hosts
-  include_tasks:
-    file: update_known_hosts.yml
-    apply:
-      delegate_to: localhost
+  include_tasks: update_known_hosts.yml
   vars:
     state: present
-    hostname: "{{ vm_hostname }}"
     home: "{{ lookup('env', 'HOME') }}"
+    ip: "{{ instance_info.ip }}"
   when: vm_update_known_hosts

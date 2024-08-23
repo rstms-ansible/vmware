@@ -18,6 +18,8 @@
 - name: Start netboot installation
   command: "vmctl start --iso {{ netboot_iso }} --connect {{ '--fullscreen ' if netboot_fullscreen else ''}} {{ '--gui ' if netboot_gui else ''}}{{ vm_hostname }}"
   delegate_to: localhost
+  vars:
+    ansible_connection: local
 
 - name: Wait for netboot installation complete
   include_tasks:

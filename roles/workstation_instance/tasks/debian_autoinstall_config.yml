@@ -30,6 +30,8 @@
     stdin: "{{ vm_password }}"
   register: user_password_hash
   delegate_to: localhost
+  vars:
+    ansible_connection: local
   become: false
 
 - name: Generate root password
@@ -45,6 +47,8 @@
     stdin: "{{ generated_password.stdout | trim }}"
   register: root_password_hash
   delegate_to: localhost
+  vars:
+    ansible_connection: local
   become: false
 
 - name: Generate FDE password
