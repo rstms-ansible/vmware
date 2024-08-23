@@ -54,17 +54,6 @@ clean:
 	rm -rf .pytest_cache
 
 #
-# version management
-#
-bumper = $(if $(shell git status --porcelain),$(error Working tree is dirty),@bumpversion $(1) && git push && git log --decorate=short | head -1)
-bump:
-	$(call bumper,patch)
-bump-minor: 
-	$(call bumper,minor)
-bump-major: 
-	$(call bumper,major)
-
-#
 # ansible-galaxy 
 #
 $(tarball): $(src)
