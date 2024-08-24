@@ -12,4 +12,3 @@ cd docs
 pip install -r requirements.txt
 ansible-galaxy collection install --force --upgrade "../${namespace}-${collection}-${version}.tar.gz"
 ./build.sh
-if [ -v RSTMS_DOCS_PREVIEW ]; then firefox build/html/index.html; fi

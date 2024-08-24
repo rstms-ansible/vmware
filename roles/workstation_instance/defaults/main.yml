@@ -31,6 +31,7 @@ netboot_dir: /var/www/netboot
 netboot_gui: false
 netboot_fullscreen: false
 netboot_timeout: 600
+netboot_wait: true
 
 # packages added by default
 netboot_packages:

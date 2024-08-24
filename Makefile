@@ -57,14 +57,11 @@ build: $(tarball)
 .PHONY: docs
 docs: clean $(tarball)
 	./mkdocs
+	firefox file:///Z:/src/vmware/docs/build/html/index.html
 
 publish: docs
 	ansible-galaxy collection publish --token $(ANSIBLE_GALAXY_TOKEN) $(tarball)
 
 release:
-	bump
-	$(MAKE) docs
-	git push
-	$(MAKE) publish
-	gh release create v$(shell cat VERSION) --target master --title "v$(shell cat VERSION) '$(shell wonderwords -wpadjective)-$(shell wonderwords -wpnoun)'" --generate-notes
-	gh release upload v$(shell cat VERSION) rstms_ansible-vmware-$(shell cat VERSION).tar.gz
+	./mkrelease
+
