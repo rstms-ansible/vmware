@@ -64,4 +64,5 @@ publish: docs
 release:
 	bump
 	$(MAKE) docs
+	git push
 	$(MAKE) publish
