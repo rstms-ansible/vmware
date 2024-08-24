@@ -21,7 +21,7 @@ rstms_ansible.vmware.workstation_instance role
 .. Collection note
 
 .. note::
-    This role is part of the `rstms_ansible.vmware collection <https://galaxy.ansible.com/ui/repo/published/rstms_ansible/vmware/>`_ (version 0.1.13).
+    This role is part of the `rstms_ansible.vmware collection <https://galaxy.ansible.com/ui/repo/published/rstms_ansible/vmware/>`_ (version 0.1.14).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
