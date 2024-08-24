@@ -27,6 +27,7 @@ docs() {
 }
 
 release() {
+    git push
     gh release create "v$version" --target master --title "v${version} '$(wonderwords -wpadjective)-$(wonderwords -wpnoun)'" --generate-notes
     gh release upload "v$version" "$tarball"
 }
