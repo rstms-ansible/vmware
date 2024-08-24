@@ -12,7 +12,6 @@ vm_password_length: 8
 vm_filesystem_dir: ""
 vm_packages: []
 
-vm_update_known_hosts: true
 vm_secrets_file: ""
 
 # full disk encryption

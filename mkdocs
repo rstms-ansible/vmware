@@ -3,7 +3,7 @@ set -ueo pipefail
 namespace=rstms_ansible
 collection=vmware
 version=$(cat VERSION)
-rm -rf docs
+[ -d docs ] && rm -rf docs
 mkdir docs
 chmod 0700 docs
 (( $#>0 )) && [[ $1 = clean ]] && exit 0

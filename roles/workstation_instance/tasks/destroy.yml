@@ -1,14 +1,4 @@
 
-- name: Remove host keys from known_hosts
-  include_tasks:
-    file: update_known_hosts.yml
-  vars:
-    hostname: "{{ vm_hostname }}"
-    home: "{{ lookup('env', 'HOME') }}"
-    state: absent
-    ip: "{{ instance_info.ip }}"
-  when: vm_update_known_hosts
-
 - name: destroy instance
   command: vmctl destroy --force {{ vm_hostname }}
   register: result

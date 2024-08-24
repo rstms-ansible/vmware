@@ -68,11 +68,9 @@
     mode: '0644'
     force: true
 
-#- name: Rewrite config index
-#  shell:
-#    cmd: "ls -lT >index.txt"
-#    chdir: "{{ netboot_dir }}"
-
+# User may add firstboot commands by including /install.site in the vm_filesystem_dir tree
+# The debian firstboot script will execute /install.site if it is present
+# The variable is set "" so the OpenBSD auto-gen logic will be skipped
 - name: Create and upload site_package tarball
   include_tasks: "upload_site_package.yml"
   vars:

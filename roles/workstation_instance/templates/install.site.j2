@@ -7,8 +7,7 @@ pkg_add -u
 echo "Reporting installation complete to {{ netboot_host }}"
 ftp http://{{ netboot_host }}/installation_complete_$(ifconfig em0 | awk '/lladdr/{print $2}') >/dev/null 2>&1 || true
 EOF
-echo "permit keepenv persist :wheel" >/etc/doas.conf
-chmod 0644 /etc/doas.conf
+[ -e /etc/doas.conf ] || echo "permit keepenv persist :wheel" >/etc/doas.conf
+chmod 0600 /etc/doas.conf
 echo "https://cdn.openbsd.org/pub/OpenBSD" >/etc/installurl
-rm /install.site
 chmod 0755 .

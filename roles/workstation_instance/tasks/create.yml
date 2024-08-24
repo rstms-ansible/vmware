@@ -14,11 +14,3 @@
   include_tasks: install.yml
   vars:
     os_name: "{{ vm_os | lower }}"
-
-- name: update known hosts
-  include_tasks: update_known_hosts.yml
-  vars:
-    state: present
-    home: "{{ lookup('env', 'HOME') }}"
-    ip: "{{ instance_info.ip }}"
-  when: vm_update_known_hosts

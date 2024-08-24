@@ -1,4 +1,7 @@
 #!/bin/sh
+echo "$0"
+[ -e /etc/doas.conf ] || echo "permit keepenv persist :sudo" >/etc/doas.conf
+chmod 0600 /etc/doas.conf
 /usr/sbin/adduser {{ vm_username }} sudo
 mkdir -p /home/{{ vm_username }}/.ssh
 /usr/bin/echo '{{ vm_ssh_public_key }}' >/home/{{ vm_username }}/.ssh/authorized_keys
@@ -10,4 +13,8 @@ mkdir -p /home/{{ vm_username }}/.ssh
 /usr/bin/apt install -y curl {{ vm_packages | join(' ') }}
 /usr/bin/curl http://{{ netboot_host }}/installation_complete_$(ip addr | awk '/ether/{print $2}') >/dev/null 2>&1 || true
 /usr/bin/sed -e 's/^@reboot.*$//' -i /etc/crontab
+if [ -x /install.site ]; then
+    /bin/sh /install.site
+    rm /install.site
+fi
 rm $0

@@ -9,11 +9,14 @@ argument_specs:
       - A response file for the OS installer is generated and uploaded to the netboot server.
       - An install package tarball is generated to be extracted at the root directory
         after installation, but before the initial boot.  See `vm_filesystem_dir`
-      - A `firstboot` script is generated during instal and executed during the initial boot.
-      - The role waits for an installation-complete message from the firstboot script,
-        then deletes the generated files from the netboot server.
-      - Optionally, the local .ssh/known-hosts may be updated so that the created VM will not 
-        conflict with existing host keys.
+      - If the install package includes /install.site it is executed after the files are 
+        extracted.
+      - A `firstboot` script is generated during install and executed during the initial
+        boot.  On Debian, this script will execute the /install.site script if present.
+      - The role can optionally wait for an installation-complete message from the firstboot
+        script, before deleting the generated files from the netboot server and returning.
+        If the wait is disabled, another mechanism must be used to delete these files.
+
     author:
       - Matt Krueger <mkrueger@rstms.net>
     options:
@@ -97,12 +100,6 @@ argument_specs:
         default: ""
         description: local directory used for generation of site install package
 
-      vm_update_known_hosts:
-        type: "bool"
-        required: false
-        default: false
-        description: "modify local ~/.ssh/known_hosts on VM create/destroy"
-
       vm_secrets_file: 
         type: "str"
         required: false
@@ -180,6 +177,12 @@ argument_specs:
         required: false
         default: 300
         description: netboot timeout value in seconds
+
+      netboot_wait:
+        type: "bool"
+        required: false
+        default: true
+        descripton: wait for completion message and clean up generated files before returning
 
       netboot_packages:
         default: "py3-pip"

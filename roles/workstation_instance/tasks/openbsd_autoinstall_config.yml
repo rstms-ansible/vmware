@@ -55,11 +55,8 @@
     mode: '0644'
     force: true
 
-#- name: Rewrite config index
-#  shell:
-#    cmd: "ls -lT >index.txt"
-#    chdir: "{{ netboot_dir }}"
 
+# set firstboot_template to "" so the debian firstboot logic will be skipped
 - name: Create and upload site_package tarball
   include_tasks: "upload_site_package.yml"
   vars:

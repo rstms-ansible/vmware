@@ -15,7 +15,8 @@ tarball = $(namespace)-$(collection)-$(version).tar.gz
 
 host = testbox.rstms.net
 vault = $(HOME)/.secrets/ansible_vault.yml
-instance_config = example_instance_debian.yml
+#instance_config = example_instance_debian.yml
+instance_config = example_instance_openbsd.yml
 playbook := example_playbook.yml
 
 # 
@@ -28,6 +29,7 @@ ansible = ansible-playbook -vv -i $(host), --extra-vars @$(vault)  --extra-vars 
 
 create:
 	$(ansible) -e "vm_state=present" $(playbook)
+	fixdns testbox
 
 edit-vault:
 	ansible-vault edit $(vault)
@@ -50,7 +52,7 @@ $(tarball): $(src)
 build: $(tarball)
 
 .PHONY: docs
-docs: $(tarball)
+docs: clean $(tarball)
 	./mkdocs
 
 publish: docs
