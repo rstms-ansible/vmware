@@ -2,15 +2,17 @@
 set -ueo pipefail
 namespace=rstms_ansible
 collection=vmware
+org=rstms-ansible
+repo="$collection"
 version=$(cat VERSION)
 [ -d docs ] && rm -rf docs
 mkdir docs
 chmod 0700 docs
 (( $#>0 )) && [[ $1 = clean ]] && exit 0
 antsibull-docs sphinx-init --use-current --squash-hierarchy "${namespace}.${collection}" --dest-dir docs
+tarball="${namespace}-${collection}-${version}.tar.gz"
+[ -f "$tarball" ] || wget "https://github.com/${org}/${repo}/releases/download/v${version}/${tarball}"
 cd docs
 pip install -r requirements.txt
-pip list
-which ansible-galaxy
-ansible-galaxy collection install --force --upgrade "../${namespace}-${collection}-${version}.tar.gz"
+ansible-galaxy collection install --force --upgrade "../$tarball"
 ./build.sh
