@@ -4,5 +4,5 @@ version=$(cat VERSION)
 make docs
 git push 
 make publish
-gh release create "v$version" --target master --title "v${version}" '$(wonderwords -wpadjective)-$(wonderwords -wpnoun)'" --generate-notes
+gh release create "v$version" --target master --title "v${version} '$(wonderwords -wpadjective)-$(wonderwords -wpnoun)'" --generate-notes
 gh release upload "v$version" rstms_ansible-vmware-${version}.tar.gz
