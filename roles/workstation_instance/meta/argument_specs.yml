@@ -182,7 +182,7 @@ argument_specs:
         type: "bool"
         required: false
         default: true
-        descripton: wait for completion message and clean up generated files before returning
+        description: wait for completion message and clean up generated files before returning
 
       netboot_packages:
         default: "py3-pip"

@@ -25,6 +25,9 @@ playbook := example_playbook.yml
 
 test: destroy create
 
+help:
+	ansible-doc -t role rstms_ansible.vmware.workstation_instance
+
 ansible = ansible-playbook -vv -i $(host), --extra-vars @$(vault)  --extra-vars @$(instance_config)
 
 create:
