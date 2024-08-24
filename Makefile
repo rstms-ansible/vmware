@@ -8,7 +8,7 @@ version != cat VERSION
 roles_src != find roles -type f
 src = $(roles_src) VERSION galaxy.yml
 tarball = $(namespace)-$(collection)-$(version).tar.gz
-codename := $(shell wonderwords -wpadjective)-$(shell wonderwords -wpnoun) 
+codename := '$(shell wonderwords -wpadjective)-$(shell wonderwords -wpnoun)'
 
 #
 # test config
