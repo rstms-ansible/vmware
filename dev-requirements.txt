@@ -1,3 +1,4 @@
+ansible
 ansible-creator
 distlib
 antsibull-docs
