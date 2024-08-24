@@ -10,5 +10,7 @@ chmod 0700 docs
 antsibull-docs sphinx-init --use-current --squash-hierarchy "${namespace}.${collection}" --dest-dir docs
 cd docs
 pip install -r requirements.txt
+pip list
+which ansible-galaxy
 ansible-galaxy collection install --force --upgrade "../${namespace}-${collection}-${version}.tar.gz"
 ./build.sh
