@@ -10,6 +10,8 @@ mkdir docs
 chmod 0700 docs
 (( $#>0 )) && [[ $1 = clean ]] && exit 0
 antsibull-docs sphinx-init --use-current --squash-hierarchy "${namespace}.${collection}" --dest-dir docs
+# fix silly use of rsync
+sed -e 's|rsync.*|cp -rp temp-rst/* rst/\nrm -rf tmp-rst|' docs/build.sh
 tarball="${namespace}-${collection}-${version}.tar.gz"
 [ -f "$tarball" ] || wget "https://github.com/${org}/${repo}/releases/download/v${version}/${tarball}"
 cd docs
