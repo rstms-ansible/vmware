@@ -17,7 +17,8 @@ build:
   commands:
     - pip install -r dev-requirements.txt
     - ./mkdocs
-    - cp -rp docs/build/html/* ${READTHEDOCS_OUTPUT}html/
+    - mkdir -p $READTHEDOCS_OUTPUT/html
+    - cp -rp docs/build/html/* $READTHEDOCS_OUTPUT/html
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
