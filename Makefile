@@ -44,11 +44,8 @@ destroy:
 clean:
 	rm -f *.tar.gz || true
 	rm -rf .pytest_cache
-	./mkdocs clean
+	./mkhelper clean
 
-#
-# ansible-galaxy 
-#
 $(tarball): $(src)
 	ansible-galaxy collection build --force
 
@@ -56,9 +53,11 @@ build: $(tarball)
 
 .PHONY: docs
 docs: clean $(tarball)
-	./mkdocs
+	./mkhelper docs
 	firefox file:///Z:/src/vmware/docs/build/html/index.html
 
-release: 
-	./mkrelease
+release: docs
+	./mkhelper release
 
+publish: release
+	./mkhelper publish

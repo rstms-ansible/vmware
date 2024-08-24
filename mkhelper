@@ -1,0 +1,51 @@
+#!/bin/bash
+
+set -ueo pipefail
+namespace=rstms_ansible
+collection=vmware
+org=rstms-ansible
+repo="$collection"
+version=$(cat VERSION)
+tarball="${namespace}-${collection}-${version}.tar.gz"
+
+clean() {
+    [ -d docs ] && rm -rf docs
+    mkdir docs
+    chmod 0700 docs
+}
+
+docs() {
+    antsibull-docs sphinx-init --use-current --squash-hierarchy "${namespace}.${collection}" --dest-dir docs
+    [ -f "$tarball" ] || wget "https://github.com/${org}/${repo}/releases/download/v${version}/${tarball}"
+    (
+	cd docs
+	pip install -r requirements.txt
+	ansible-galaxy collection install --force --upgrade "../$tarball"
+	sed -i -e 's|rsync.*|cp -rp temp-rst/* rst/\nrm -rf tmp-rst|' build.sh
+	./build.sh
+    )
+}
+
+release() {
+    gh release create "v$version" --target master --title "v${version} '$(wonderwords -wpadjective)-$(wonderwords -wpnoun)'" --generate-notes
+    gh release upload "v$version" "$tarball"
+}
+
+publish() {
+    ansible-galaxy collection publish --token ${ANSIBLE_GALAXY_TOKEN} "${tarball}"
+}
+
+usage() {
+    echo >&2 "usage: $(basename $0) clean|docs|release|publish"
+    exit 1
+}
+
+(( $#>0 )) || usage
+
+case $1 in 
+    clean) clean;;
+    docs) docs;;
+    release) release;;
+    publish) publish;;
+    *) usage;;
+esac
