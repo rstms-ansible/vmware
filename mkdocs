@@ -4,8 +4,8 @@ set -ueo pipefail
 
 namespace=rstms_ansible
 collection=vmware
-tarball="${namespace}-${collection}-${version}.tar.gz"
 version=$(cat VERSION)
+tarball="${namespace}-${collection}-${version}.tar.gz"
 
 clean() {
     [ -d docs ] && rm -rf docs
@@ -27,7 +27,7 @@ docs() {
 }
 
 usage() {
-    echo >&2 "usage: $(basename $0) clean|docs|release|publish"
+    echo >&2 "usage: $(basename $0) clean|docs"
     exit 1
 }
 
