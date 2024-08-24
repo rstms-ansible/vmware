@@ -8,6 +8,7 @@ version != cat VERSION
 roles_src != find roles -type f
 src = $(roles_src) VERSION galaxy.yml
 tarball = $(namespace)-$(collection)-$(version).tar.gz
+codename := $(shell wonderwords -wpadjective)-$(shell wonderwords -wpnoun) 
 
 #
 # test config
@@ -44,20 +45,20 @@ destroy:
 clean:
 	rm -f *.tar.gz || true
 	rm -rf .pytest_cache
-	./mkhelper clean
+	./mkdocs clean
 
 $(tarball): $(src)
 	ansible-galaxy collection build --force
 
 build: $(tarball)
 
-.PHONY: docs
-docs: clean $(tarball)
-	./mkhelper docs
+docs: $(tarball)
+	./mkdocs docs
 	firefox file:///Z:/src/vmware/docs/build/html/index.html
 
 release: docs
-	./mkhelper release
+	gh release create v$(version) --target master --title "v$(version) '$(codename)'" --generate-notes
+	gh release upload v$(version) $(tarball)
 
 publish: release
-	./mkhelper publish
+	ansible-galaxy collection publish --token $(ANSIBLE_GALAXY_TOKEN) $(tarball)
