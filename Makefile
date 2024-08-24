@@ -59,9 +59,6 @@ docs: clean $(tarball)
 	./mkdocs
 	firefox file:///Z:/src/vmware/docs/build/html/index.html
 
-publish: docs
-	ansible-galaxy collection publish --token $(ANSIBLE_GALAXY_TOKEN) $(tarball)
-
-release:
+release: 
 	./mkrelease
 
