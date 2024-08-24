@@ -60,3 +60,8 @@ docs: clean $(tarball)
 
 publish: docs
 	ansible-galaxy collection publish --token $(ANSIBLE_GALAXY_TOKEN) $(tarball)
+
+release:
+	bump
+	$(MAKE) docs
+	$(MAKE) publish
