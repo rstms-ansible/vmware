@@ -2,6 +2,10 @@
 
 This repository contains the `rstms_ansible.vmware` Ansible Collection.
 
+![License](https://img.shields.io/github/license/rstms-ansible/vmware)
+![Release](https://img.shields.io/github/v/release/rstms-ansible/vmware)
+![Ansible Role](https://img.shields.io/ansible/collection/d/:rstms-ansible/:vmware)
+
 <!--start requires_ansible-->
 <!--end requires_ansible-->
 

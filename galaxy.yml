@@ -17,7 +17,7 @@ tags: ["vmware", "workstation", "desktop"]
 dependencies: {}
 
 repository: http://github.com/rstms-ansible/vmware
-documentation: http://github.com/rstms-ansible/vmware/docs
+documentation: https://rstms-ansible-collection.readthedocs.io
 homepage: http://github.com/rstms-ansible/vmware
 issues: http://github.com/rstms-ansible/vmware/issues
 
