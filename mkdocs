@@ -3,6 +3,8 @@
 set -ueo pipefail
 
 namespace=rstms_ansible
+org=rstms-ansible
+repo=vmware
 collection=vmware
 version=$(cat VERSION)
 tarball="${namespace}-${collection}-${version}.tar.gz"
