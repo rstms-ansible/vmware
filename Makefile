@@ -57,7 +57,7 @@ docs: $(tarball)
 	firefox file:///Z:/src/vmware/docs/build/html/index.html
 
 release: docs
-	gh release create v$(version) --target master --title "v$(version) '$(codename)'" --generate-notes
+	gh release create v$(version) --target master --title "v$(version) $(codename)" --generate-notes
 	gh release upload v$(version) $(tarball)
 
 publish: release
