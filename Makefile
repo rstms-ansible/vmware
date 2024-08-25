@@ -48,6 +48,7 @@ clean:
 	./mkdocs clean
 
 $(tarball): $(src)
+	rm -f *.tar.gz
 	ansible-galaxy collection build --force
 
 build: $(tarball)
@@ -57,6 +58,7 @@ docs: $(tarball)
 	firefox file:///Z:/src/vmware/docs/build/html/index.html
 
 release: docs
+	git push
 	gh release create v$(version) --target master --title "v$(version) $(codename)" --generate-notes
 	gh release upload v$(version) $(tarball)
 
