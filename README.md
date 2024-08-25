@@ -2,7 +2,7 @@
 
 This repository contains the `rstms_ansible.vmware` Ansible Collection.
 
-![Read the Docs](https://img.shields.io/readthedocs/:rstms-ansible-vmware)
+![Documentation](https://img.shields.io/readthedocs/rstms-ansible-vmware)
 ![Release](https://img.shields.io/github/v/release/rstms-ansible/vmware)
 ![GitHub last commit](https://img.shields.io/github/last-commit/rstms-ansible/vmware)
 ![License](https://img.shields.io/github/license/rstms-ansible/vmware)
