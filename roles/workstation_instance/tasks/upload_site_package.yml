@@ -23,7 +23,6 @@
     mode: "0755"
     owner: "root"
     group: "wheel"
-  when: firstboot_template | default("") | length > 0
 
 - name: write install.site
   include_tasks: write_install_dot_site.yml
