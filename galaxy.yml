@@ -5,7 +5,7 @@
 
 namespace: "rstms_ansible"
 name: "vmware"
-version: 0.1.43
+version: 0.1.44
 readme: README.md
 authors:
   - Matt Krueger <mkrueger@rstms.net>
