@@ -9,6 +9,19 @@ roles_src != find roles -type f
 src = $(roles_src) VERSION galaxy.yml
 tarball = $(namespace)-$(collection)-$(version).tar.gz
 codename := '$(shell wonderwords -wpadjective)-$(shell wonderwords -wpnoun)'
+latest_release != gh release list -L 1 --json tagName --jq '.[]|.tagName' | tr -d v
+
+ifeq ($(shell git status --porcelain),'')
+git_dirty = 
+else
+git_dirty = true
+endif
+
+ifeq ($(version),$(latest_release))
+is_released = true
+else
+is_released = 
+endif
 
 #
 # test config
@@ -23,8 +36,14 @@ playbook := example_playbook.yml
 # 
 # test targets
 #
+debug:
+	@echo version=$(version)
+	@echo latest_release=$(latest_release)
+	@echo $(if $(is_released),released,not_released)
+	@echo git_dirty=$(git_dirty)
 
 test: destroy create
+
 
 help:
 	ansible-doc -t role rstms_ansible.vmware.workstation_instance
@@ -59,8 +78,8 @@ docs: $(tarball)
 
 release: docs
 	git push
-	gh release create v$(version) --target master --title "v$(version) $(codename)" --generate-notes
-	gh release upload v$(version) $(tarball)
+	$(if $(is_released),@echo latest_release is $(latest_release),gh release create v$(version) --target master --title "v$(version) $(codename)" --generate-notes)
+	$(if $(is_released),,gh release upload v$(version) $(tarball))
 
 publish: release
 	ansible-galaxy collection publish --token $(ANSIBLE_GALAXY_TOKEN) $(tarball)
