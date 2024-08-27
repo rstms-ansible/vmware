@@ -36,11 +36,12 @@ playbook := example_playbook.yml
 # 
 # test targets
 #
-debug:
-	@echo version=$(version)
-	@echo latest_release=$(latest_release)
-	@echo $(if $(is_released),released,not_released)
-	@echo git_dirty=$(git_dirty)
+
+#debug:
+#	@echo version=$(version)
+#	@echo latest_release=$(latest_release)
+#	@echo $(if $(is_released),released,not_released)
+#	@echo git_dirty=$(git_dirty)
 
 test: destroy create
 
