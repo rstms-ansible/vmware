@@ -2,9 +2,13 @@ vm_os: debian
 vm_version: bookworm
 vm_secrets_file: example_secrets.yml
 vm_filesystem_dir: example_filesystems/debian
-vm_packages:
-  - doas
+netboot_proxy: http://debcache.rstms.net:3142
+netboot_packages:
   - man-db
   - manpages
   - net-tools
+  - figlet
+netboot_command: |
+    hostname -s | figlet -f slant >/etc/motd
+    echo "executed $0" >/root/NETBOOT_USER_COMMAND
 netboot_fullscreen: true

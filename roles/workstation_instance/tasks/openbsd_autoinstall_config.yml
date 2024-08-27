@@ -55,13 +55,8 @@
     mode: '0644'
     force: true
 
-
-# set firstboot_template to "" so the debian firstboot logic will be skipped
 - name: Create and upload site_package tarball
   include_tasks: "upload_site_package.yml"
-  vars:
-    firstboot_template: ""
-    install_dot_site: "install.site"
 
 - name: Reload httpd
   command: rcctl reload httpd

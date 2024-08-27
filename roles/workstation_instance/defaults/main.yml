@@ -10,7 +10,6 @@ vm_ram_mb: 1024
 vm_headless: true
 vm_password_length: 8
 vm_filesystem_dir: ""
-vm_packages: []
 
 vm_secrets_file: ""
 
@@ -28,13 +27,15 @@ vm_os_arch: amd64
 netboot_host: netboot.rstms.net
 netboot_iso: http://{{ netboot_host }}/rstms-netboot.iso
 netboot_dir: /var/www/netboot
+netboot_proxy: ""
 netboot_gui: false
 netboot_fullscreen: false
 netboot_timeout: 600
 netboot_wait: true
+netboot_keep_startup_scripts: false
 
 # packages added by default
-netboot_packages:
+netboot_auto_packages:
   debian:
     - doas
     - rsyslog
@@ -42,3 +43,9 @@ netboot_packages:
     - py3-pip
   alpine:
     - doas
+
+# packages added at first boot
+netboot_packages: []
+
+# command run at first boot
+netboot_command: ""

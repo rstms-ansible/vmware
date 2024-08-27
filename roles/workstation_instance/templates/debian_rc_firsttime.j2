@@ -1,5 +1,4 @@
 #!/bin/sh
-echo "$0"
 [ -e /etc/doas.conf ] || echo "permit keepenv persist :sudo" >/etc/doas.conf
 chmod 0600 /etc/doas.conf
 /usr/sbin/adduser {{ vm_username }} sudo
@@ -8,13 +7,15 @@ mkdir -p /home/{{ vm_username }}/.ssh
 /usr/bin/chown -R {{ vm_username }}:{{ vm_username }} /home/{{ vm_username }}/.ssh
 /usr/bin/chmod 0700 /home/{{ vm_username }}/.ssh
 /usr/bin/chmod 0600 /home/{{ vm_username }}/.ssh/authorized_keys 
-/usr/bin/chmod 0600 /etc/doas.conf
 /usr/bin/apt update
-/usr/bin/apt install -y curl {{ vm_packages | join(' ') }}
+/usr/bin/apt install -y curl {{ netboot_packages | join(' ') }}
 /usr/bin/curl http://{{ netboot_host }}/installation_complete_$(ip addr | awk '/ether/{print $2}') >/dev/null 2>&1 || true
 /usr/bin/sed -e 's/^@reboot.*$//' -i /etc/crontab
-if [ -x /install.site ]; then
-    /bin/sh /install.site
-    rm /install.site
-fi
-rm $0
+for script in /install.site /etc/rc.firsttime.user; do
+    if [ -e "$script" ]; then
+	cd /
+	/bin/sh "$script"
+	{{ '#' if netboot_keep_startup_scripts else '' }}rm "$script"
+    fi
+done
+{{ '#' if netboot_keep_startup_scripts else '' }}rm $0

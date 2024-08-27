@@ -7,7 +7,7 @@ d-i mirror/protocol string http
 d-i mirror/country string manual
 d-i mirror/http/hostname string http.us.debian.org
 d-i mirror/http/directory string /debian
-d-i mirror/http/proxy string http://debcache.rstms.net:3142
+{{ '# no proxy ' if (netboot_proxy | default("") | length == 0) else ('d-i mirror/http/proxy string ' ~ netboot_proxy) }}
 d-i passwd/root-password-crypted password {{ root_password_hash.stdout | trim }}
 d-i passwd/user-fullname string {{ vm_username }}
 d-i passwd/username string {{ vm_username }}
@@ -33,7 +33,7 @@ d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
 d-i apt-setup/cdrom/set-first boolean false
 d-i pkgsel/run_tasksel boolean false
-d-i pkgsel/include string {{ netboot_packages.debian | join(' ') }}
+d-i pkgsel/include string {{ netboot_auto_packages.debian | join(' ') }}
 popularity-contest popularity-contest/participate boolean false
 d-i grub-installer/only_debian boolean true
 d-i grub-installer/with_other_os boolean true
@@ -42,12 +42,12 @@ d-i finish-install/reboot_in_progress note
 d-i debian-installer/exit/poweroff boolean false
 d-i preseed/late_command string \
   echo {{ vm_hostname }} >/target/etc/hostname && \
-  echo '@reboot root /bin/sh /root/debian_firstboot' >>/target/etc/crontab && \
+  echo '@reboot root /bin/sh /etc/rc.firsttime' >>/target/etc/crontab && \
   wget http://{{ netboot_host }}/{{ install_package_path }}/{{ install_package_filename }} -O /target/root/install_package.tgz && \
   tar zxvf /target/root/install_package.tgz -C /target && \
   rm /target/root/install_package.tgz && \
   chmod 0755 /target && \
-  chmod 0700 /target/root/debian_firstboot && \
+  chmod 0700 /target/etc/rc.firsttime && \
   echo >>/target/etc/default/grub 'GRUB_TERMINAL="serial console"' && \
   echo >>/target/etc/default/grub 'GRUB_SERIAL_COMMAND="serial --speed=19200 --unit=0 --word=8 --parity=no --stop=1"' && \
   sed -e 's/^\(GRUB_CMDLINE_LINUX_DEFAULT=\).*/\1"console=tty0 console=ttyS0,19200n8"/' -i /target/etc/default/grub && \

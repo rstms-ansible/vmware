@@ -11,9 +11,9 @@
   set_fact:
     install_package_filename: "{{ instance_info.mac }}-{{ vm_hostname }}.tgz"
 
-- name: Add openssh-server to netboot_packages
+- name: Add openssh-server to debian netboot_auto_packages
   set_fact:
-    netboot_packages: "{{ netboot_packages | combine({ 'debian': (netboot_packages.debian + ['openssh-server']) }) }}"
+    netboot_auto_packages: "{{ netboot_auto_packages | combine({ 'debian': (netboot_auto_packages.debian + ['openssh-server']) }) }}"
   when: vm_sshd_enabled
 
 - name: Verify disk encryption passphrase

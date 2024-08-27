@@ -1,4 +1,2 @@
 #!/bin/sh
-echo "install.site was executed" >/root/INSTALL_SITE_EXECUTED
-cp /root/debian_firstboot /root/debian_firstboot.backup
-cp /install.site /root/install.site.backup
+echo "user install.site executed" >/root/USER_INSTALL_SITE_COMMANDS

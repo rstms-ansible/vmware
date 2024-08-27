@@ -18,27 +18,44 @@
 
 - name: write install.site
   include_tasks: write_install_dot_site.yml
-  when: install_dot_site | default("") | length > 0
 
-
-- name: Ensure root directory exists in site package
+- name: Ensure /etc directory exists in site package
   file:
-    path: "{{ package_build_dir }}/root"
+    path: "{{ package_build_dir }}/etc"
     state: "directory"
-    mode: "0700"
+    mode: "0755"
     owner: "root"
     group: "wheel"
   when: firstboot_template | default("") | length > 0
 
-- name: Write firstboot script to site package
+- name: check site package for clobbered files
+  include_tasks:
+    file: check_site_package_clobbers.yml
+  loop:
+    - etc/rc.firsttime
+    - etc/rc.firsttime.user
+
+# on openbsd, /etc/rc.firsttime is written during execution of install.site
+# on debian, /etc/rc.firsttime is written here
+- name: Write firstboot script to /etc/rc.firsttime
   template:
-    src: "{{ firstboot_template }}.j2"
-    dest: "{{ package_build_dir }}/root/{{ firstboot_template }}"
+    src: debian_rc_firsttime.j2
+    dest: "{{ package_build_dir }}/etc/rc.firsttime"
     mode: "0700"
     owner: root
     group: wheel
     force: yes
-  when: firstboot_template | default("") | length > 0
+  when: vm_os | lower == 'debian'
+
+- name: Write netboot_command to /etc/rc.firsttime.user
+  copy:
+    content: "{{ '#!/bin/sh\n' ~ netboot_command ~ '\n' }}"
+    dest: "{{ package_build_dir }}/etc/rc.firsttime.user"
+    mode: "0700"
+    owner: root
+    group: wheel
+    force: yes
+  when: netboot_command | default("") | length > 0
 
 - name: Generate site package tarball
   command:
