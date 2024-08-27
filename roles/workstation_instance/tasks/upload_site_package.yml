@@ -16,9 +16,6 @@
     mode: preserve
   when: vm_filesystem_dir | length > 0
 
-- name: write install.site
-  include_tasks: write_install_dot_site.yml
-
 - name: Ensure /etc directory exists in site package
   file:
     path: "{{ package_build_dir }}/etc"
@@ -27,6 +24,9 @@
     owner: "root"
     group: "wheel"
   when: firstboot_template | default("") | length > 0
+
+- name: write install.site
+  include_tasks: write_install_dot_site.yml
 
 - name: check site package for clobbered files
   include_tasks:
