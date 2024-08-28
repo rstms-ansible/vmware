@@ -206,4 +206,17 @@ argument_specs:
         default: ""
         type: "str"
         required: false
-        description: shell command to execute on forst boot
+        description: shell command to execute on first boot
+
+      netboot_install_x11_packages:
+        default: true
+        type: "bool"
+        required: false
+        description: set false on OpenBSD to skip installation of the X11 packages
+
+      netboot_keep_startup_scripts:
+        default: false
+        type: "bool"
+        required: false
+        description: prevent deletion of auto-generated startup configuration scripts
+
