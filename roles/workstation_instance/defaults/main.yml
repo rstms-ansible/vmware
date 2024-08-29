@@ -39,6 +39,7 @@ netboot_install_x11_packages: true
 netboot_auto_packages:
   debian:
     - doas
+    - sudo
     - rsyslog
     - python3-pip
   openbsd:
