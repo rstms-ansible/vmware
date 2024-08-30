@@ -16,6 +16,11 @@
     netboot_auto_packages: "{{ netboot_auto_packages | combine({ 'debian': (netboot_auto_packages.debian + ['openssh-server']) }) }}"
   when: vm_sshd_enabled
 
+- name: Remove systemd 
+  set_fact:
+    netboot_auto_packages: "{{ netboot_auto_packages | combine({ 'debian': (['sysvinit-core', 'libpam-elogind'] + netboot_auto_packages.debian) }) }}"
+  when: netboot_remove_systemd
+
 - name: Verify disk encryption passphrase
   assert:
     that:
