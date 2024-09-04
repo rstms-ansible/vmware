@@ -4,7 +4,7 @@
 
 - name: start installation_complete watcher
   shell: |
-    tail -n 0 -f /var/www/logs/error.log \
+    tail -n 0 -f /var/www/logs/access.log \
     | awk -v sentinel={{ sentinel.stdout | trim }} '
       /installation_complete_{{ instance_info.mac }}/{ 
           system("rm " sentinel);

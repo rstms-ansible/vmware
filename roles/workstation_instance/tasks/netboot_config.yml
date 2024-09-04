@@ -5,7 +5,7 @@
 
 - name: copy netboot ipxe
   copy:
-    src: "{{ netboot_dir }}/rstms-netboot-{{ vm_os | lower }}.ipxe"
+    src: "{{ netboot_dir }}/netboot-{{ vm_os | lower }}.ipxe"
     dest: "{{ netboot_ipxe }}"
     remote_src: true
     force: true

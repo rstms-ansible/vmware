@@ -26,7 +26,7 @@ vm_os_arch: amd64
 
 # netboot config
 netboot_host: netboot.rstms.net
-netboot_iso: http://{{ netboot_host }}/rstms-netboot.iso
+netboot_iso: https://{{ netboot_host }}/iso/ipxe.iso
 netboot_dir: /var/www/netboot
 netboot_proxy: ""
 netboot_gui: false

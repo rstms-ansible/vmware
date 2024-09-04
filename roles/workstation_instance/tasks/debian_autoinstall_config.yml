@@ -1,15 +1,15 @@
 
 - name: Set install_package_path
   set_fact:
-    install_package_path: "{{ vm_os | lower }}/install"
+    install_package_path: ""
 
 - name: set install_package_dir
   set_fact:
-    install_package_dir: "{{ netboot_dir }}/{{ install_package_path }}"
+    install_package_dir: "{{ netboot_dir }}"
 
 - name: Set install_package_filename
   set_fact:
-    install_package_filename: "{{ instance_info.mac }}-{{ vm_hostname }}.tgz"
+    install_package_filename: "{{ instance_info.mac }}-package.tgz"
 
 - name: Add openssh-server to debian netboot_auto_packages
   set_fact:
@@ -82,5 +82,9 @@
     firstboot_template: "debian_firstboot"
     install_dot_site: ""
 
-- name: Reload httpd
-  command: rcctl reload httpd
+- name: Compile netboot initrd
+  command: "/usr/local/bin/mkinitrd.debian {{ instance_info.mac }}"
+  become: true
+
+- name: Reload nginx
+  command: rcctl reload nginx

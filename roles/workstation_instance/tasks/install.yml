@@ -19,12 +19,24 @@
       become: true
       become_method: doas
 
+- name: create client cert
+  command: "mkcert -d 1h vmctl --cert-file /tmp/vmctl.pem --key-file /tmp/vmctl.key"
+  delegate_to: localhost
+  vars:
+    ansible_connection: local
+
 - name: Start netboot installation
-  command: "vmctl start --iso {{ netboot_iso }} --connect {{ '--fullscreen ' if netboot_fullscreen else ''}} {{ '--gui ' if netboot_gui else ''}}{{ vm_hostname }}"
+  command: "vmctl --client-cert /tmp/vmctl.pem --client-key /tmp/vmctl.key start --iso {{ netboot_iso }} --connect {{ '--fullscreen ' if netboot_fullscreen else ''}} {{ '--gui ' if netboot_gui else ''}}{{ vm_hostname }}"
   delegate_to: localhost
   vars:
     ansible_connection: local
   when: netboot_wait
+
+- name: delete client certs
+  shell: rm /tmp/vmctl.pem /tmp/vmctl.key
+  delegate_to: localhost
+  vars:
+    ansible_connection: local
 
 - name: Wait for netboot installation complete
   include_tasks:

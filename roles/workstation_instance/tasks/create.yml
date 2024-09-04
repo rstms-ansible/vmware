@@ -1,6 +1,6 @@
 
 - name: create instance
-  command: vmctl create --cpu {{ vm_cpu_count }} --ram {{ vm_ram_mb }} --disk {{ vm_disk_mb }} {{ vm_hostname }}
+  command: vmctl create --cpu {{ vm_cpu_count }} --ram {{ vm_ram_mb }} --disk {{ vm_disk_mb }} {{ vm_hostname }} --guest-timezone UTC
   register: result
   delegate_to: localhost
   vars:

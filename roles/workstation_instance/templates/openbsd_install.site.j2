@@ -6,7 +6,7 @@ pkg_add {{ netboot_auto_packages.openbsd | join(' ') }} {{ netboot_packages | jo
 echo "Updating installed packages"
 pkg_add -u
 echo "Reporting installation complete to {{ netboot_host }}"
-ftp http://{{ netboot_host }}/installation_complete_$(ifconfig em0 | awk '/lladdr/{print $2}') >/dev/null 2>&1 || true
+ftp https://{{ netboot_host }}/installation_complete_$(ifconfig em0 | awk '/lladdr/{print $2}') >/dev/null 2>&1 || true
 UFT=/etc/rc.firsttime.user
 if [ -e "$UFT" ]; then
   cd /
