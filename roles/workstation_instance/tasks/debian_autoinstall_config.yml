@@ -1,16 +1,4 @@
 
-- name: Set install_package_path
-  set_fact:
-    install_package_path: ""
-
-- name: set install_package_dir
-  set_fact:
-    install_package_dir: "{{ netboot_dir }}"
-
-- name: Set install_package_filename
-  set_fact:
-    install_package_filename: "{{ instance_info.mac }}-package.tgz"
-
 - name: Add openssh-server to debian netboot_auto_packages
   set_fact:
     netboot_auto_packages: "{{ netboot_auto_packages | combine({ 'debian': (netboot_auto_packages.debian + ['openssh-server']) }) }}"
@@ -37,7 +25,6 @@
   delegate_to: localhost
   vars:
     ansible_connection: local
-  become: false
 
 - name: Generate root password
   include_tasks: generate_password.yml
@@ -54,7 +41,6 @@
   delegate_to: localhost
   vars:
     ansible_connection: local
-  become: false
 
 - name: Generate FDE password
   include_tasks: generate_password.yml
@@ -64,27 +50,43 @@
     vault_file: "{{ vm_secrets_file }}"
   when: vm_fde_enabled
 
-- name: Upload autoinstall config file
+- name: create config staging dir
+  tempfile:
+    state: directory
+  register: config_staging
+  delegate_to: localhost
+  vars:
+    ansible_connection: local
+
+- name: generate site_package tarball in staging dir
+  include_tasks: "generate_site_package.yml"
+  vars:
+    filename: "{{ instance_info.mac }}-package.tgz"
+    build_dir: "{{ config_staging.path }}"
+
+- name: generate preseed file in staging dir
   template:
     src: debian_preseed.j2
-    dest: "{{ netboot_dir }}/{{ instance_info.mac }}-preseed.conf"
-    owner: root
-    group: www
+    dest: "{{ config_staging.path }}/preseed.conf"
     mode: '0644'
     force: true
-
-# User may add firstboot commands by including /install.site in the vm_filesystem_dir tree
-# The debian firstboot script will execute /install.site if it is present
-# The variable is set "" so the OpenBSD auto-gen logic will be skipped
-- name: Create and upload site_package tarball
-  include_tasks: "upload_site_package.yml"
+  delegate_to: localhost
   vars:
-    firstboot_template: "debian_firstboot"
-    install_dot_site: ""
+    ansible_connection: local
 
-- name: Compile netboot initrd
-  command: "/usr/local/bin/mkinitrd.debian {{ instance_info.mac }}"
-  become: true
+- name: upload configuration to netboot host
+  command:
+    cmd: "nbctl add {{ instance_info.mac }} debian preseed.conf {{ instance_info.mac }}-package.tgz"
+    chdir: "{{ config_staging.path }}"
+  delegate_to: localhost
+  vars:
+    ansible_connection: local
 
-- name: Reload nginx
-  command: rcctl reload nginx
+- name: cleanup config staging dir
+  file:
+    path: "{{ config_staging.path }}"
+    state: absent
+  delegate_to: localhost
+  vars:
+    ansible_connection: local
+

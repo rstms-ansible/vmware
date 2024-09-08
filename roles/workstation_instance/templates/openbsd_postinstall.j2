@@ -1,20 +1,14 @@
 #!/bin/sh
 cat <<-"EOF" >>/etc/rc.firsttime
+cp /etc/rc.firsttime /root/etc/rc.firsttime.copy
 syspatch
 echo "Installing packages: {{ netboot_auto_packages.openbsd | join(' ') }} {{ netboot_packages | join(' ') }}"
 pkg_add {{ netboot_auto_packages.openbsd | join(' ') }} {{ netboot_packages | join(' ') }}
 echo "Updating installed packages"
 pkg_add -u
+{{ netboot_command | default("#") }}
 echo "Reporting installation complete to {{ netboot_host }}"
 ftp https://{{ netboot_host }}/installation_complete_$(ifconfig em0 | awk '/lladdr/{print $2}') >/dev/null 2>&1 || true
-UFT=/etc/rc.firsttime.user
-if [ -e "$UFT" ]; then
-  cd /
-  chmod 0700 "$UFT"
-  /bin/sh "$UFT"
-  {{ '#' if netboot_keep_startup_scripts else '' }}rm "$UFT"
-fi
-unset UFT
 EOF
 chmod 0700 /etc/rc.firsttime
 [ -f /etc/doas.conf ] || echo "permit keepenv persist :wheel" >/etc/doas.conf

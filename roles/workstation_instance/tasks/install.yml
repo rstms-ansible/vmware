@@ -3,21 +3,8 @@
   debug: 
     msg: "os={{ vm_os }} version={{ vm_os_version }}"
 
-- name: Configure netboot
-  include_tasks:
-    file: netboot_config.yml
-    apply: 
-      delegate_to: "{{ netboot_host }}"
-      become: true
-      become_method: doas
-
 - name: Configure OS autoinstall
-  include_tasks:
-    file: "{{ vm_os | lower }}_autoinstall_config.yml"
-    apply: 
-      delegate_to: "{{ netboot_host }}"
-      become: true
-      become_method: doas
+  include_tasks: "{{ os_name }}_autoinstall_config.yml"
 
 - name: create client cert
   command: "mkcert -d 1h vmctl --cert-file /tmp/vmctl.pem --key-file /tmp/vmctl.key"
@@ -48,19 +35,9 @@
   when: netboot_wait
 
 - name: Cleanup OS autoinstall
-  include_tasks:
-    file: "{{ vm_os | lower }}_autoinstall_cleanup.yml"
-    apply:
-      delegate_to: "{{ netboot_host }}"
-      become: true
-      become_method: doas
-  when: netboot_wait
-
-- name: Cleanup netboot
-  include_tasks:
-    file: netboot_cleanup.yml
-    apply: 
-      delegate_to: "{{ netboot_host }}"
-      become: true
-      become_method: doas
+  command:
+    cmd: "nbctl rm {{ instance_info.mac }}"
+  delegate_to: localhost
+  vars:
+    ansible_connection: local
   when: netboot_wait

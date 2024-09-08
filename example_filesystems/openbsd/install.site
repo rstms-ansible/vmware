@@ -1,2 +1,3 @@
 #!/bin/sh
+cat $0 >root/INSTALL_PACKAGE_INSTALL_SITE
 cat /etc/ssl/keymaster.pem >>/etc/ssl/cert.pem
