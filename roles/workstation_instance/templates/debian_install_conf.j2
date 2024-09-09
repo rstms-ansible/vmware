@@ -7,10 +7,10 @@ d-i mirror/country string manual
 d-i mirror/http/hostname string http.us.debian.org
 d-i mirror/http/directory string /debian
 {{ '# no proxy ' if (netboot_proxy | default("") | length == 0) else ('d-i mirror/http/proxy string ' ~ netboot_proxy) }}
-d-i passwd/root-password-crypted password {{ root_password_hash.stdout | trim }}
+d-i passwd/root-password-crypted password {{ root_password_hash }}
 d-i passwd/user-fullname string {{ vm_username }}
 d-i passwd/username string {{ vm_username }}
-d-i passwd/user-password-crypted password {{ user_password_hash.stdout | trim }}
+d-i passwd/user-password-crypted password {{ user_password_hash }}
 d-i clock-setup/utc boolean true
 d-i time/zone string {{ vm_timezone }}
 d-i clock-setup/ntp boolean true
@@ -47,9 +47,9 @@ d-i debian-installer/exit/poweroff boolean false
 d-i debian-installer/add-kernel-opts string net.ifnames=0 biosdevname=0
 d-i preseed/late_command string \
   echo {{ vm_hostname }} >/target/etc/hostname && \
-  echo '@reboot root /bin/sh /etc/rc.firsttime' >>/target/etc/crontab && \
-  tar zxvf /install_package.tgz -C /target && \
+  echo '@reboot root /postinstall' >>/target/etc/crontab && \
+  tar zxvf /package.tgz -C /target && \
+  rm /package.tgz && \
   chmod 0755 /target && \
-  chmod 0700 /target/etc/rc.firsttime && \
   in-target update-grub 
 

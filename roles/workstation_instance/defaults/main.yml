@@ -26,7 +26,7 @@ vm_os_arch: amd64
 
 # netboot config
 netboot_host: netboot.rstms.net
-netboot_iso: https://{{ netboot_host }}/iso/ipxe.iso
+netboot_iso: https://{{ netboot_host }}/netboot.iso
 netboot_dir: /var/www/netboot
 netboot_proxy: ""
 netboot_gui: false
@@ -54,3 +54,5 @@ netboot_packages: []
 
 # command run at first boot
 netboot_command: ""
+
+insecure_expose_passwords: false

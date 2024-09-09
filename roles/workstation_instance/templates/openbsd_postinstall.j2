@@ -1,6 +1,6 @@
 #!/bin/sh
+# openbsd postinstall is run at the end of the install script chrooted into the new filesystem
 cat <<-"EOF" >>/etc/rc.firsttime
-cp /etc/rc.firsttime /root/etc/rc.firsttime.copy
 syspatch
 echo "Installing packages: {{ netboot_auto_packages.openbsd | join(' ') }} {{ netboot_packages | join(' ') }}"
 pkg_add {{ netboot_auto_packages.openbsd | join(' ') }} {{ netboot_packages | join(' ') }}
@@ -16,3 +16,5 @@ chmod 0600 /etc/doas.conf
 echo "https://cdn.openbsd.org/pub/OpenBSD" >/etc/installurl
 chmod 0644 /etc/installurl
 chmod 0755 .
+chmod 0755 etc
+chmod 0755 etc/ssl

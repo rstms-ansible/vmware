@@ -11,6 +11,11 @@
     instance_info: "{{ instance_info | combine(result.stdout | from_json) | combine({'created': true, 'exists': true}) }}"
 
 - name: install and configure
-  include_tasks: install.yml
+  include_tasks:
+    file: install.yml
+    apply:
+      delegate_to: localhost
   vars:
     os_name: "{{ vm_os | lower }}"
+    connection_type: local
+

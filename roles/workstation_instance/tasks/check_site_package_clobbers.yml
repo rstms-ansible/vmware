@@ -1,9 +1,0 @@
-- name: check site package content
-  stat:
-    path: "{{ package_build_dir }}/{{ item }}"
-  register: clobbered
-
-- name: clobbered file in site package
-  fail: 
-    msg: "Site package must not contain {{ item }}"
-  when: clobbered.stat.exists

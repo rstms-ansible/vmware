@@ -1,4 +1,5 @@
 #!/bin/sh
+# debian postinstall is run from the cron reboot target on first boot
 [ -e /etc/doas.conf ] || echo "permit keepenv persist :sudo" >/etc/doas.conf
 chmod 0600 /etc/doas.conf
 /usr/sbin/adduser {{ vm_username }} sudo
@@ -11,6 +12,7 @@ mkdir -p /home/{{ vm_username }}/.ssh
 /usr/bin/apt install -y curl {{ netboot_packages | join(' ') }}
 /usr/bin/sed -e 's/^@reboot.*$//' -i /etc/crontab
 [ -x /install.site ] && /install.site
+{{ '#' if netboot_keep_startup_scripts else '' }}rm /install.site
 {{ '#' if netboot_keep_startup_scripts else '' }}rm $0
 {{ netboot_command | default("#") }} 
 /usr/bin/curl http://{{ netboot_host }}/installation_complete_$(ip addr | awk '/ether/{print $2}') >/dev/null 2>&1 || true

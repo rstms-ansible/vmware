@@ -3,27 +3,164 @@
   debug: 
     msg: "os={{ vm_os }} version={{ vm_os_version }}"
 
-- name: Configure OS autoinstall
-  include_tasks: "{{ os_name }}_autoinstall_config.yml"
+- name: Verify disk encryption passphrase
+  assert:
+    that:
+      - vm_fde_passphrase is defined
+      - vm_fde_password | length > vm_fde_passphrase_minimum_length
+    fail_msg: "vm_fde_passphrase must be provided as a vaulted variable"
+  when: vm_fde_enabled and (vm_fde_mode == 'p')
 
-- name: create client cert
-  command: "mkcert -d 1h vmctl --cert-file /tmp/vmctl.pem --key-file /tmp/vmctl.key"
-  delegate_to: localhost
+- name: Verify disk encryption mode
+  assert:
+    that: 
+     - vm_fde_mode == 'p'
+    fail_msg: "disk encryption mode {{ vm_fde_mode }} not supported"
+  when: vm_fde_enabled
+
+- name: Hash user password 
+  include_tasks:
+    file: generate_password.yml
+    apply: 
+      no_log: "{{ not insecure_expose_passwords }}"
   vars:
-    ansible_connection: local
+    existing_password: "{{ vm_password }}"
+    label: "{{ vm_hostname }}_user"
+    length: "{{ vm_password_length }}"
+    vault_file: "{{ vm_secrets_file }}"
+  no_log: "{{ not insecure_expose_passwords }}"
+
+- name: set user_password_hash
+  set_fact:
+    user_password_hash: "{{ generated_hash }}"
+  no_log: "{{ not insecure_expose_passwords }}"
+
+- name: Generate root password
+  include_tasks:
+    file: generate_password.yml
+    apply: 
+      no_log: "{{ not insecure_expose_passwords }}"
+  vars:
+    existing_password: ""
+    label: "{{ vm_hostname }}_root"
+    length: "{{ vm_password_length }}"
+    vault_file: "{{ vm_secrets_file }}"
+  no_log: "{{ not insecure_expose_passwords }}"
+
+- name: set root_password_hash
+  set_fact:
+    root_password_hash: "{{ generated_hash }}"
+  no_log: "{{ not insecure_expose_passwords }}"
+
+- name: Generate FDE password
+  include_tasks:
+    file: generate_password.yml
+    apply:
+      no_log: "{{ not insecure_expose_passwords }}"
+  vars:
+    existing_password: "{{ vm_fde_passphrase }}"
+    label: "{{ vm_hostname }}_disk"
+    length: "{{ vm_fde_password_length }}"
+    vault_file: "{{ vm_secrets_file }}"
+  when: vm_fde_enabled and (vm_fde_mode == 'p') 
+  no_log: "{{ not insecure_expose_passwords }}"
+
+- name: create config cert dir
+  tempfile:
+    state: directory
+  register: config_cert
+
+- name: create netboot client cert
+  command: "mkcert -d 1h vmctl --cert-file {{ config_cert.path }}/netboot.pem --key-file {{ config_cert.path }}/netboot.key"
+
+- name: add keymaster CA to package build dir
+  shell: "step ca root > {{ config_cert.path }}/keymaster.pem"
+
+- name: create config staging dir
+  tempfile:
+    state: directory
+  register: config_staging
+
+- name: set config_dir
+  set_fact: 
+    config_dir: "{{ config_staging.path }}"
+
+- name: set build_dir
+  set_fact:
+    build_dir: "{{ config_dir }}/pkg"
+
+- name: create package build dir tree
+  file:
+    path: "{{ build_dir }}/etc/ssl"
+    state: "directory"
+
+- name: Add debian openssh-server package
+  set_fact:
+    netboot_auto_packages: "{{ netboot_auto_packages | combine({ 'debian': (netboot_auto_packages.debian + ['openssh-server']) }) }}"
+  when: ( os_name == 'debian' ) and vm_sshd_enabled
+
+
+- name: Remove debian systemd 
+  set_fact:
+    netboot_auto_packages: "{{ netboot_auto_packages | combine({ 'debian': (['sysvinit-core', 'libpam-elogind'] + netboot_auto_packages.debian) }) }}"
+  when: (os_name == 'debian') and netboot_remove_systemd
+
+- name: generate installer response file in staging dir
+  template:
+    src: "{{ os_name }}_install_conf.j2"
+    dest: "{{ config_dir }}/install.conf"
+    mode: '0644'
+    force: true
+
+- name: Copy vm_filesystem_dir files to site package 
+  copy: 
+    src: "{{ vm_filesystem_dir }}/"
+    dest: "{{ build_dir }}"
+    owner: root
+    group: 0
+    mode: preserve
+  when: vm_filesystem_dir | length > 0
+  become: true
+
+- name: copy certs to package build tree
+  shell: "cp {{ config_cert.path }}/* {{ build_dir }}/etc/ssl"
+  become: true
+
+# add postinstall script to package root
+- name: add postinstall script to install.site
+  blockinfile:
+    path: "{{ build_dir }}/postinstall"
+    create: true
+    block: "{{ lookup('template', '{{ os_name }}_postinstall.j2') }}"
+    insertafter: EOF
+    owner: root
+    group: 0
+    mode: 0700
+  become: true
+
+- name: Generate site package tarball
+  archive:
+    path: "{{ build_dir }}/*"
+    dest: "{{ config_dir }}/{{ instance_info.mac }}.tgz"
+    owner: "{{ lookup('env', 'USER') }}"
+    group: "{{ lookup('env', 'USER') }}"
+    mode: "0600"
+  become: true
+
+- name: upload configuration to netboot server
+  command:
+    cmd: "nbctl --ca {{ config_cert.path }}/keymaster.pem --cert {{ config_cert.path }}/netboot.pem --key {{ config_cert.path }}/netboot.key add {{ instance_info.mac }} {{ os_name }} install.conf {{ instance_info.mac }}.tgz"
+    chdir: "{{ config_dir }}"
+
+- name: cleanup config staging dir
+  file:
+    path: "{{ config_dir }}"
+    state: absent
+  become: true
 
 - name: Start netboot installation
-  command: "vmctl --client-cert /tmp/vmctl.pem --client-key /tmp/vmctl.key start --iso {{ netboot_iso }} --connect {{ '--fullscreen ' if netboot_fullscreen else ''}} {{ '--gui ' if netboot_gui else ''}}{{ vm_hostname }}"
-  delegate_to: localhost
-  vars:
-    ansible_connection: local
+  command: "vmctl --ca-file {{ config_cert.path }}/keymaster.pem --client-cert {{ config_cert.path }}/netboot.pem --client-key {{ config_cert.path }}/netboot.key start --iso {{ netboot_iso }} --connect {{ '--fullscreen ' if netboot_fullscreen else ''}} {{ '--gui ' if netboot_gui else ''}}{{ vm_hostname }}"
   when: netboot_wait
-
-- name: delete client certs
-  shell: rm /tmp/vmctl.pem /tmp/vmctl.key
-  delegate_to: localhost
-  vars:
-    ansible_connection: local
 
 - name: Wait for netboot installation complete
   include_tasks:
@@ -36,8 +173,10 @@
 
 - name: Cleanup OS autoinstall
   command:
-    cmd: "nbctl rm {{ instance_info.mac }}"
-  delegate_to: localhost
-  vars:
-    ansible_connection: local
+    cmd: "nbctl --ca {{ config_cert.path }}/keymaster.pem --cert {{ config_cert.path }}/netboot.pem --key {{ config_cert.path }}/netboot.key rm {{ instance_info.mac }}"
   when: netboot_wait
+
+- name: cleanup config cert dir
+  file:
+    path: "{{ config_cert.path }}"
+    state: absent

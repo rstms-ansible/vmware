@@ -29,8 +29,8 @@ endif
 
 host = testbox.rstms.net
 vault = $(HOME)/.secrets/ansible_vault.yml
-#instance_config = example_instance_debian.yml
-instance_config = example_instance_openbsd.yml
+instance_config = example_instance_debian.yml
+#instance_config = example_instance_openbsd.yml
 playbook := example_playbook.yml
 
 # 
@@ -49,7 +49,7 @@ test: destroy create
 help:
 	ansible-doc -t role rstms_ansible.vmware.workstation_instance
 
-ansible = ansible-playbook -vv -i $(host), --extra-vars @$(vault)  --extra-vars @$(instance_config)
+ansible = ansible-playbook -vv -i $(host), --extra-vars @$(vault)  --extra-vars @$(instance_config) --extra-vars '{"insecure_expose_passwords": true}'
 
 create:
 	$(ansible) -e "vm_state=present" $(playbook)
